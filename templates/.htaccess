@@ -1,0 +1,5 @@
+# Deny all PHP template files in following directory
+<FilesMatch "\.php$">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>

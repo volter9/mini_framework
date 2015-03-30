@@ -1,0 +1,8 @@
+{
+	"name": "volter/ffframework",
+	"description": "Simple procedural/functional framework",
+	
+	"autoload": {
+		"files": ["api/app.php"]
+	}
+}

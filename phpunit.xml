@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<phpunit colors="true" 
+		 bootstrap="tests/bootstrap.php"
+		 verbose="true"
+		 stopOnError="true"
+         stopOnFailure="true"
+         stopOnSkipped="true">
+	<testsuites>
+		<testsuite name="mini_blog">
+			<directory>./tests</directory>
+		</testsuite>
+	</testsuites>
+</phpunit>

@@ -1,0 +1,123 @@
+/**
+ * Common styles
+ */
+html,
+body {
+	font-family: sans-serif;
+	
+	margin: 0px;
+	padding: 0px;
+}
+
+a {
+	color: #f47800;
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+.clearfix:after {
+	content: "";
+	font-size: 0px;
+	visibility: hidden;
+	
+	clear: both;
+	display: block;
+	height: 0px;
+	width: 100%;
+}
+
+.clearfix > .left {
+	float: left;
+}
+
+.clearfix > .right {
+	float: right;
+}
+
+/**
+ * Header
+ */
+body > header {
+	border-bottom: 1px solid #ccc;
+	
+	margin-bottom: 10px;
+}
+
+body > header h1 {
+	font-size: 20px;
+	font-weight: normal;
+	line-height: 100%;
+	
+	margin: 0px;
+	padding: 16px;
+}
+
+body > header ul {
+	list-style: none;
+	
+	margin: 0px;
+	padding: 0px;
+}
+
+body > header ul li {
+	font-size: 14px;
+	line-height: 100%;
+	
+	float: right;
+}
+
+body > header ul li a {
+	display: block;
+	padding: 19px;
+}
+
+body > header ul li a:hover {
+	background-color: rgba(0,0,0,0.025);
+}
+
+/**
+ * Main section
+ */
+body > article {
+	margin: 0px auto;
+	padding: 6px;
+	width: 800px;
+}
+
+body > article p {
+	font-size: 16px;
+	line-height: 160%;
+	
+	margin: 0px;
+	margin-bottom: 12px;
+}
+
+body > article h1,
+body > article h2,
+body > article h3,
+body > article h4,
+body > article h5,
+body > article h6 {
+	font-weight: normal;
+	
+	margin: 0px;
+	margin-bottom: 12px;
+}
+
+body > article img.logo {
+	display: block;
+	margin: 20px auto;
+	margin-bottom: 40px;
+}
+
+/**
+ * FFFooter
+ */
+body > footer p {
+	color: #aaa;
+	font-size: 12px;
+	text-align: center;
+}

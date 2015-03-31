@@ -1,5 +1,5 @@
 {
-	"name": "volter/ffframework",
+	"name": "volter/mini_framework",
 	"description": "Simple procedural/functional framework",
 	
 	"autoload": {

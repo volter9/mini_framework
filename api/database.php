@@ -52,6 +52,12 @@ function db_connect ($group = 'default') {
 	db('active', $db);
 }
 
+/**
+ * Create PDO MySQL database connection
+ * 
+ * @param array $config
+ * @return \PDO
+ */
 function db_create_connection ($config) {
 	$host     = $config['host'];
 	$user     = $config['user'];
@@ -87,7 +93,7 @@ function db_query ($query, array $data = [], $mode = 0) {
 		$statement->execute($data);	
 	}
 	catch (PDOException $e) {
-		return db_prepare_exception($e, $query, $data);
+		db_prepare_exception($e, $query, $data);
 	}
 	
 	return db_return($mode, $statement, $db);

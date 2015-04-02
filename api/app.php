@@ -57,6 +57,7 @@ function app_load ($config) {
 		db_connect();
 	}
 	
+	load_files($config('autoload.files'));
 	load_files($config('hooks'));
 	app_load_models($config('autoload.models'));
 }

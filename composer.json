@@ -1,6 +1,8 @@
 {
 	"name": "volter/mini_framework",
 	"description": "Simple procedural/functional framework",
+	"keywords": ["framework", "procedural", "simple", "php5", "mini"],
+	"license": "MIT",
 	
 	"autoload": {
 		"files": ["api/app.php"]

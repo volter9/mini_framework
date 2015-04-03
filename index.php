@@ -1,21 +1,21 @@
 <?php
 
 /**
- * FFFramework simple framework in procedural/functional PHP, 
+ * mini_framework is a simple framework in procedural/functional PHP
  *
  * @author volter9
  */
 
 /**
- * FFFramework constants
+ * mini_framework constants
  * 
- * @const string FFF_VERSION Version of mini_blog
- * @const string FFF_BASEPATH Base path of the app
- * @const string FFF_APP_DIR Path of app dir (app/)
+ * @const string MF_VERSION Version of mini_blog
+ * @const string MF_BASEPATH Base path of the app
+ * @const string MF_APP_DIR Path of app dir (app/)
  */
-define('FFF_BASEPATH', __DIR__ . '/');
-define('FFF_APP_DIR' , FFF_BASEPATH . 'app/');
-define('FFF_DEBUG'   , true);
+define('MF_BASEPATH', __DIR__ . '/');
+define('MF_APP_DIR' , MF_BASEPATH . 'app/');
+define('MF_DEBUG'   , true);
 
 $time = microtime(true);
 
@@ -23,7 +23,7 @@ $time = microtime(true);
 require 'vendor/autoload.php';
 
 /** Boot the app */
-app_boot(sprintf('%sconfig', FFF_APP_DIR));
+app_boot(sprintf('%sconfig', MF_APP_DIR));
 
 /** Showing debug information */
-defined('FFF_DEBUG') and printf('<!-- Execution time: %.5f -->', microtime(true) - $time);
+defined('MF_DEBUG') and printf('<!-- Execution time: %.5f -->', microtime(true) - $time);

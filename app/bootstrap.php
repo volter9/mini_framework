@@ -13,12 +13,12 @@
 ob_start();
 session_start();
 
-ini_set('display_errors', (int)defined('FFF_DEBUG'));
-error_reporting(-(int)defined('FFF_DEBUG'));
+ini_set('display_errors', (int)defined('MF_DEBUG'));
+error_reporting(-(int)defined('MF_DEBUG'));
 
 date_default_timezone_set('Europe/Moscow');
 mb_internal_encoding('UTF-8');
 
 set_exception_handler(function ($e) {
-	!defined('FFF_DEBUG') or show_error($e);
+	!defined('MF_DEBUG') or show_error($e);
 });

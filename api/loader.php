@@ -44,7 +44,7 @@ function load_php ($file, $ignore = false, $ext = '.php') {
  * @return mixed
  */
 function load_app_file ($file, $ignore = false) {
-	return load_php(FFF_APP_DIR . $file, $ignore);
+	return load_php(MF_APP_DIR . $file, $ignore);
 }
 
 /**
@@ -55,7 +55,7 @@ function load_app_file ($file, $ignore = false) {
  * @return mixed
  */
 function load_api ($api, $ignore = false) {
-	return load_php(FFF_API_DIR . $api, $ignore);
+	return load_php(MF_API_DIR . $api, $ignore);
 }
 
 /**
@@ -79,7 +79,7 @@ function load_files ($files) {
  * @param string $model
  */
 function load_model ($model) {
-	if (file_exists(FFF_APP_DIR . "models/$model.php")) {
+	if (file_exists(MF_APP_DIR . "models/$model.php")) {
 		load_app_file("models/$model");
 	}
 	

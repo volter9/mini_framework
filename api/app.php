@@ -3,18 +3,18 @@
 /**
  * FFFramework constants
  * 
- * @const string FFF_VERSION Version of mini_blog
- * @const string FFF_API_DIR Path to system files
+ * @const string MF_VERSION Version of mini_blog
+ * @const string MF_API_DIR Path to system files
  */
-define('FFF_VERSION', '1.0');
-define('FFF_API_DIR', __DIR__ . '/');
+define('MF_VERSION', '1.0');
+define('MF_API_DIR', __DIR__ . '/');
 
 /**
  * Head start requirements
  */
-require FFF_API_DIR . 'utils.php';
-require FFF_API_DIR . 'loader.php';
-require FFF_API_DIR . 'config.php';
+require MF_API_DIR . 'utils.php';
+require MF_API_DIR . 'loader.php';
+require MF_API_DIR . 'config.php';
 
 /**
  * Boot the app
@@ -39,7 +39,7 @@ function system_load ($config) {
 	load_system();
 	
 	router('settings', $config('routing'));
-	router('settings.root', get_base_url(FFF_BASEPATH, $_SERVER['DOCUMENT_ROOT']));
+	router('settings.root', get_base_url(MF_BASEPATH, $_SERVER['DOCUMENT_ROOT']));
 	
 	views('templates', $config('templates'));
 	lang('settings', $config('i18n'));

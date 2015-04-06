@@ -12,7 +12,7 @@ function forms ($key = null, $value = null) {
 	
 	$repo or $repo = repo([
 		'providers' => [],
-		'elements' => []
+		'elements'  => []
 	]);
 	
 	return $repo($key, $value);

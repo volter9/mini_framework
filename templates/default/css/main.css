@@ -10,7 +10,7 @@ body {
 }
 
 a {
-	color: #f47800;
+	color: #78a;
 	text-decoration: none;
 }
 
@@ -107,10 +107,13 @@ body > article h6 {
 	margin-bottom: 12px;
 }
 
-body > article img.logo {
-	display: block;
-	margin: 20px auto;
-	margin-bottom: 40px;
+#logo {
+    font-size: 1.8em;
+    font-weight: 300;
+    text-align: center;
+    
+    margin-top: 10px;
+    margin-bottom: 20px;
 }
 
 /**

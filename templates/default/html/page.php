@@ -1,8 +1,6 @@
 <article>
-	<a href="<?php echo url('#index') ?>">
-		<img alt="FFFramework logo" class="logo" src="<?php echo url('#index') . 'ffframework.png' ?>"/>
-	</a>
-	
+    <?php view('blocks/title') ?> 
+    
 	<h2><?php echo $title ?></h2>
 	
 	<p>Эта страница создана для того что бы продемонстрировать маршрутизацию и контролеры вместе с действиями (action).</p>

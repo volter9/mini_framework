@@ -1,7 +1,7 @@
 <header>
 	<div class="clearfix">
 		<h1 class="left">
-			<a href="<?php echo url('#index') ?>">FFFramework</a>
+			<a href="<?php echo url('#index') ?>">mini_framework</a>
 		</h1>
 		
 		<ul class="right">

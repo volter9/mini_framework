@@ -43,7 +43,7 @@ function system_load ($config) {
 	
 	views('templates', $config('templates'));
 	lang('settings', $config('i18n'));
-	validation('settings', $config('validation'));
+	storage('validation', $config('validation'));
 	
 	db($config('database'));
 }

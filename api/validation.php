@@ -22,15 +22,6 @@ function validation ($key = null, $value = null) {
 }
 
 /**
- * Set validation rules
- * 
- * @param array $rules
- */
-function validation_rules (array $rules) {
-	validation('rules', $rules);
-}
-
-/**
  * Initiate validation
  * 
  * @param array $fields
@@ -38,14 +29,15 @@ function validation_rules (array $rules) {
  * @param array $validators
  */
 function validation_init (array $fields, array $messages, array $validators = array()) {
-    $path = validation('settings.validators');
+    $path = storage('validation.validators');
     
-    $validators = $validators ? $validators : load_app_file($path);
+    $validators = $validators ? $validators : load_app_file($path, true);
     
     if (empty($validators)) {
         throw new Exception('There is no validators found!');
     }
     
+    validators($validators);
     validation_fields($fields);
     validators_messages($messages);
 }
@@ -95,22 +87,13 @@ function add_validator ($name, Closure $validator, $message) {
 }
 
 /**
- * Setup validation
- * 
- * @param Closure $config
- */
-function validation_init (array $validators, array $messages) {
-	validators($validators);
-	validators_messages($messages);
-}
-
-/**
  * Validate input data
  * 
  * @param array $data
+ * @param array $rules
  * @return bool
  */
-function validate (array $data, $rules) {
+function validate (array $data, array $rules) {
 	if (!$rules) {
 		throw new Exception(
 			'Validation rules were not initialized!'

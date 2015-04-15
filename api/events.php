@@ -29,7 +29,7 @@ function bind ($event, $callback) {
  * @param string $event
  */
 function emit ($event) {
-	$args  = func_num_args() > 1 ? array_slice(func_get_args(), 1) : [];
+	$args  = func_num_args() > 1 ? array_slice(func_get_args(), 1) : array();
 	$event = events($event);
 	
 	if (empty($event)) {

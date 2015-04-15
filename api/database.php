@@ -85,7 +85,7 @@ function db_create_connection ($config) {
  * @param int $mode
  * @return array|int|bool
  */
-function db_query ($query, array $data = [], $mode = 0) {
+function db_query ($query, array $data = array(), $mode = 0) {
 	$db = db('active');
 	
 	try {
@@ -110,7 +110,7 @@ function db_query ($query, array $data = [], $mode = 0) {
 function db_return ($mode, PDOStatement $statement, PDO $db) {
 	static $modes = null;
 	
-	$modes or $modes = [DB_ONE, DB_SIMPLE, DB_AGGREGATE, 0];
+	$modes or $modes = array(DB_ONE, DB_SIMPLE, DB_AGGREGATE, 0);
 	$count = $statement->rowCount();
 	
 	if (in_array($mode, $modes)) {
@@ -172,7 +172,7 @@ function db_prepare_exception (Exception $e, $query, array $data) {
  * @param bool $one
  * @return array|false
  */
-function db_select ($query, array $data = [], $one = false) {
+function db_select ($query, array $data = array(), $one = false) {
 	return db_query($query, $data, (int)$one);
 }
 
@@ -216,10 +216,10 @@ function db_prepare_insert (array $data) {
 		str_repeat('?,', count($data)), ','
 	);
 	
-	return [
+	return array(
 		$keys,
 		$placeholders
-	];
+	);
 }
 
 /**
@@ -230,7 +230,7 @@ function db_prepare_insert (array $data) {
  * @param array $where
  * @return bool
  */
-function db_update ($table, array $data, array $where = []) {
+function db_update ($table, array $data, array $where = array()) {
 	if (empty($data)) {
 		return false;
 	}
@@ -259,7 +259,7 @@ function db_update ($table, array $data, array $where = []) {
  * @return string
  */
 function db_prepare_update (array $data) {
-	$update = [];
+	$update = array();
 	
 	foreach ($data as $key => $value) {
 		$update[] = "$key = ?";
@@ -275,7 +275,7 @@ function db_prepare_update (array $data) {
  * @param array $where
  * @return bool
  */
-function db_delete ($table, array $where = []) {
+function db_delete ($table, array $where = array()) {
 	$query = "DELETE FROM $table %s";
 	$where = db_prepare_where($where);
 	
@@ -293,9 +293,9 @@ function db_delete ($table, array $where = []) {
  * @param array $where
  * @return array
  */
-function db_prepare_where (array $where = []) {
+function db_prepare_where (array $where = array()) {
 	if (empty($where)) {
-		return ['query' => '', 'data' => $where];
+		return array('query' => '', 'data' => $where);
 	}
 	
 	$query = 'WHERE ';
@@ -304,10 +304,10 @@ function db_prepare_where (array $where = []) {
 		$query .= db_prepare_where_field($field);
 	}
 	
-	return [
+	return array(
 		'query' => trim(chop($query, 'AND OR')),
 		'data' => array_values($where)
-	];
+	);
 }
 
 /**

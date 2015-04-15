@@ -15,7 +15,7 @@
  */
 function router ($key = null, $value = null) {
 	static $repo = null;
-	$repo or $repo = repo(['routes' => []]);
+	$repo or $repo = repo(array('routes' => array()));
 	
 	return $repo($key, $value);
 }
@@ -34,7 +34,7 @@ function router_find ($url, $method) {
 		$pattern = "#^{$routeUrl}\$#i";
 		
 		if (
-			in_array($route['method'], ['*', $method]) &&
+			in_array($route['method'], array('*', $method)) &&
 			preg_match($pattern, $url, $matches)
 		) {
 			array_shift($matches);
@@ -43,10 +43,10 @@ function router_find ($url, $method) {
 				return is_numeric($v) ? (int)$v : $v;
 			}, $matches);
 			
-			return [
+			return array(
 				'route' => $route,
 				'matches' => $matches
-			];
+			);
 		}
 	}
 	
@@ -73,7 +73,7 @@ function route ($url, $action) {
  * @param bool $absolute
  * @return string
  */
-function url ($id, $params = [], $absolute = false) {
+function url ($id, $params = array(), $absolute = false) {
 	$settings = router('settings');
 	
 	if ($absolute) {
@@ -99,7 +99,7 @@ function url ($id, $params = [], $absolute = false) {
  * 
  * @see url
  */
-function redirect ($id, $params = [], $absolute = false) {
+function redirect ($id, $params = array(), $absolute = false) {
 	$url = url($id, $params, $absolute);
 	
 	header("Location: $url");
@@ -281,8 +281,8 @@ function show_404 () {
  * @param Exception $exception
  */
 function show_error (Exception $exception) {
-	view('error', [
+	view('error', array(
 		'exception' => $exception
-	]);
+	));
 	exit;
 }

@@ -26,7 +26,7 @@ function views ($key = null, $value = null) {
  * @param string $template
  * @param array $data
  */
-function view ($template, $data = [], $global = true) {
+function view ($template, $data = array(), $global = true) {
 	$template = view_path($template);
 	
 	if (!empty($data) && $global) {

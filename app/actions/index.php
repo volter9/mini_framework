@@ -11,18 +11,18 @@ function actions_init () {
  * Index action
  */
 function action_index () {
-	view('main', [
+	view('main', array(
 		'title' => 'Главная страница',
 		'view' => 'index'
-	]);
+	));
 }
 
 /**
  * Page action
  */
 function action_page () {
-	view('main', [
+	view('main', array(
 		'title' => 'Доп. страница',
 		'view' => 'page'
-	]);
+	));
 }

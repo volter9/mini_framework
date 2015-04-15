@@ -65,13 +65,13 @@ function validation_fields (array $fields) {
  * @param string|Closure $message
  */
 function add_validator ($name, Closure $validator, $message) {
-	validators([
+	validators(array(
 		$name => $validator
-	]);
+	));
 	
-	validators_messages([
+	validators_messages(array(
 		$name => $message
-	]);
+	));
 }
 
 /**
@@ -97,7 +97,7 @@ function validate (array $data) {
 		);
 	}
 	
-	$errors = [];
+	$errors = array();
 	
 	foreach ($rules as $field => $set) {
 		$value = isset($data[$field]) ? $data[$field] : null;
@@ -135,7 +135,7 @@ function validate_field ($field, $value, $rules, array $data) {
 		    );
 		}
 		
-		$result = call_user_func_array($validator, array_merge([$value, $data], $params));
+		$result = call_user_func_array($validator, array_merge(array($value, $data), $params));
 		
 		if (!(bool)$result) {
 			$message = validation("messages.$name");
@@ -168,19 +168,19 @@ function validate_field ($field, $value, $rules, array $data) {
  */
 function parse_rules ($rules) {
 	$rules = explode('|', $rules);
-	$result = [];
+	$result = array();
 	
 	foreach ($rules as $validator) {
-		$params = [];
+		$params = array();
 		
 		if (strpos($validator, ':') !== false) {
 			list($validator, $params) = parse_rule($validator);
 		}
 		
-		$result[] = [
+		$result[] = array(
 			'validator' => $validator,
 			'params' => $params
-		];
+		);
 	}
 	
 	return $result;
@@ -202,7 +202,7 @@ function parse_rule ($rule) {
         explode(',', $params)
     );
 	
-	return [$validator, $params];
+	return array($validator, $params);
 }
 
 /**

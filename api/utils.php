@@ -13,7 +13,7 @@
  * @param bool $readonly
  * @return callable
  */
-function repo ($default = [], $readonly = false) {
+function repo ($default = array(), $readonly = false) {
 	$repo = $default;
 	
 	/**
@@ -112,7 +112,7 @@ function md_set (&$array, $key, $value) {
 		$key = array_shift($keys);
 		
 		if ( !isset($curs[$key]) ) {
-			$curs[$key] = [];
+			$curs[$key] = array();
 		}
 	}
 	
@@ -126,7 +126,7 @@ function md_set (&$array, $key, $value) {
  * @return callable
  */
 function stack () {
-	$repo = [];
+	$repo = array();
 	
 	/**
 	 * Stack callback
@@ -174,7 +174,7 @@ function exclude ($delimiter, $subject) {
  * @return array 
  */
 function pluck (array $array, $field, $default = '') {
-	$result = [];
+	$result = array();
 	
 	foreach ($array as $key => $value) {
 		$result[$key] = isset($value[$field]) ? $value[$field] : $default;

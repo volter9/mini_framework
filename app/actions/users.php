@@ -2,16 +2,16 @@
 
 function users ($user = null) {
 	static $repo;
-	$repo or $repo = repo([
-		'webkill' => [
+	$repo or $repo = repo(array(
+		'webkill' => array(
 			'name' => 'Вася',
 			'age' => 25
-		],
-		'striker' => [
+		),
+		'striker' => array(
 			'name' => 'Петя',
 			'age' => 21
-		]
-	], true);
+		)
+	), true);
 	
 	return $repo($user);
 }
@@ -23,21 +23,21 @@ function actions_init () {
 function action_index () {
 	$users = users();
 	
-	view('main', [
+	view('main', array(
 		'title' => 'Пользователи сайта',
 		'users' => $users,
 		'view' => 'users'
-	]);
+	));
 }
 
 function action_show_user($user = '') {
-	if ($user === '' || ($user = users($user)) === false) {
+	if (!$user = users($user)) {
 		return false;
 	}
 	
-	view('main', [
+	view('main', array(
 		'title' => 'Пользователь ' . $user['name'],
 		'user' => $user,
 		'view' => 'user'
-	]);
+	));
 }

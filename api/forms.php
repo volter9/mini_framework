@@ -10,10 +10,10 @@
 function forms ($key = null, $value = null) {
 	static $repo;
 	
-	$repo or $repo = repo([
-		'providers' => [],
-		'elements'  => []
-	]);
+	$repo or $repo = repo(array(
+		'providers' => array(),
+		'elements' => array()
+	));
 	
 	return $repo($key, $value);
 }
@@ -25,7 +25,7 @@ function forms ($key = null, $value = null) {
  * @param Closure $callback
  */
 function form_provider ($name, Closure $callback) {
-	forms('providers', [$name => $callback]);
+	forms('providers', array($name => $callback));
 }
 
 /**
@@ -37,10 +37,10 @@ function form_provider ($name, Closure $callback) {
 function build_form (array $scheme, array $data) {
 	$view = $scheme['view'];
 	
-	view($view, [
+	view($view, array(
 		'scheme' => $scheme,
 		'data' => $data
-	]);
+	));
 }
 
 /**
@@ -75,7 +75,7 @@ function build_element_provider ($type, $provider, array $data) {
 		);
 	}
 	
-	view("forms/elements/$type", array_merge($data, [
+	view("forms/elements/$type", array_merge($data, array(
 		'data' => $data_provider()
-	]));
+	)));
 }

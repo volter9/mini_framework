@@ -9,10 +9,10 @@
  * @return array
  */
 function pagination_generate ($total, $ipp, $page) {
-	$result = [];
+	$result = array();
 	$offset = 0;
 	$pages = ceil($total / $ipp);
-	$pagination = [];
+	$pagination = array();
 	
 	if ($page >= $pages) {
 		$page = $pages;
@@ -77,10 +77,10 @@ function paginate_query ($query, array $data, $limit, $page) {
 	$data[] = $pages['limit'];
 	$data[] = $pages['offset'];
 	
-	return [
+	return array(
 		'items' => db_select($query, $data),
 		'pages' => $pages,
-	];
+	);
 }
 
 /**

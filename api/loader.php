@@ -94,7 +94,7 @@ function load_model ($model) {
  * Load system dependencies
  */
 function load_system () {
-	$api = [
+	$api = array(
 		'router', 
 		'events', 
 		'view', 
@@ -102,7 +102,7 @@ function load_system () {
 		'input', 
 		'storage',
 		'i18n'
-	];
+	);
 	
 	foreach ($api as $script) {
 		load_api($script);

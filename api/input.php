@@ -63,10 +63,10 @@ function get_array () {
 		
 		/**
 		 * Other methods available only in **enterprise edition**.
-		 * Empty array would be provided for you as a fallback.
+		 * But here's an empty array for you, as a fallback.
 		 */
 		default:
-			return [];
+			return array();
 	}
 }
 

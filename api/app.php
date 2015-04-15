@@ -6,7 +6,7 @@
  * @const string MF_VERSION Version of mini_blog
  * @const string MF_API_DIR Path to system files
  */
-define('MF_VERSION', '1.0');
+define('MF_VERSION', '1.0.3');
 define('MF_API_DIR', __DIR__ . '/');
 
 /**
@@ -43,6 +43,7 @@ function system_load ($config) {
 	
 	views('templates', $config('templates'));
 	lang('settings', $config('i18n'));
+	validation('settings', $config('validation'));
 	
 	db($config('database'));
 }
@@ -59,6 +60,7 @@ function app_load ($config) {
 	
 	load_files($config('autoload.files'));
 	load_files($config('hooks'));
+	
 	app_load_models($config('autoload.models'));
 }
 

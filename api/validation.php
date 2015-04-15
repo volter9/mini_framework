@@ -31,9 +31,29 @@ function validation_rules (array $rules) {
 }
 
 /**
+ * Initiate validation
+ * 
+ * @param array $fields
+ * @param array $messages
+ * @param array $validators
+ */
+function validation_init (array $fields, array $messages, array $validators = array()) {
+    $path = validation('settings.validators');
+    
+    $validators = $validators ? $validators : load_app_file($path);
+    
+    if (empty($validators)) {
+        throw new Exception('There is no validators found!');
+    }
+    
+    validation_fields($fields);
+    validators_messages($messages);
+}
+
+/**
  * Set validators callbacks
  * 
- * @param aray $validators
+ * @param array $validators
  */
 function validators (array $validators) {
 	validation('validators', $validators);
@@ -42,7 +62,7 @@ function validators (array $validators) {
 /**
  * Set validators error messages
  * 
- * @param aray $messages
+ * @param array $messages
  */
 function validators_messages (array $messages) {
 	validation('messages', $messages);
@@ -51,7 +71,7 @@ function validators_messages (array $messages) {
 /**
  * Set validation fields
  * 
- * @param aray $fields
+ * @param array $fields
  */
 function validation_fields (array $fields) {
 	validation('fields', $fields);
@@ -90,8 +110,8 @@ function validation_init (array $validators, array $messages) {
  * @param array $data
  * @return bool
  */
-function validate (array $data) {
-	if ( !($rules = validation('rules')) ) {
+function validate (array $data, $rules) {
+	if (!$rules) {
 		throw new Exception(
 			'Validation rules were not initialized!'
 		);
@@ -179,7 +199,7 @@ function parse_rules ($rules) {
 		
 		$result[] = array(
 			'validator' => $validator,
-			'params' => $params
+			'params'    => $params
 		);
 	}
 	
@@ -213,7 +233,7 @@ function parse_rule ($rule) {
  * @return array|string
  */
 function validation_errors ($string = false) {
-	if (!($errors = validation('errors'))) {
+	if (!$errors = validation('errors')) {
 		return false;
 	}
 	

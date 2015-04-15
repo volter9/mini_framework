@@ -23,10 +23,10 @@ return array(
 	
 	'routing' => array(
 		'base_url' => 'http://ffframework.dev/',
-		'symbols' => [
+		'symbols' => array(
 			'/:any' => '/?([\d\w\-_]+)',
 			'/:num' => '/?(\d+)'
-		],
+		),
 		'root' => ''
 	),
 	
@@ -36,7 +36,8 @@ return array(
 	),
 	
 	'autoload' => array(
-		'models' => []
+		'models' => array(),
+		'files'  => array()
 	),
 	
 	'i18n' => array(

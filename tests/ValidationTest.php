@@ -13,21 +13,21 @@ class ValidationTest extends PHPUnit_Framework_TestCase {
 	}
 	
 	public function getValidData () {
-		return [
+		return array(
 			'username' => 'cool_dood', // yeah, dude
 			'password' => '123456',
 			'confirm' => '123456',
 			'mail' => 'vasya.pupkin@gmail.com'
-		];
+		);
 	}
 	
 	public function getInvalidData () {
-		return [
+		return array(
 			'username' => 'modasdrfdd13123das',
 			'password' => '123456123456dad asdasd asd asd as dasd12312 ',
 			'confirm' => '123456~',
 			'mail' => 'abc'
-		];
+		);
 	}
 	
 	public function testValidData () {

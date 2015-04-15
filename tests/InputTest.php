@@ -9,19 +9,19 @@ class InputTest extends PHPUnit_Framework_TestCase {
 	protected function setUpPost () {
 		$this->setUpMethod('post');
 		
-		$_POST = [
+		$_POST = array(
 			'some' => 'test',
 			'data' => implode(',', range(1, 10))
-		];
+		);
 	}
 	
 	protected function setUpGet () {
 		$this->setUpMethod('get');
 		
-		$_GET = [
+		$_GET = array(
 			'another' => 'test',
 			'data' => implode(',', range(20, 30))
-		];
+		);
 	}
 	
 	public function testPostInput () {
@@ -39,10 +39,10 @@ class InputTest extends PHPUnit_Framework_TestCase {
 	}
 	
 	public function sessionData () {
-		return [
-			['username', 'peter'],
-			['password', '123456']
-		];
+		return array(
+			array('username', 'peter'),
+			array('password', '123456')
+		);
 	}
 	
 	/**

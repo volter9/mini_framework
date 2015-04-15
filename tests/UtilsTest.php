@@ -7,22 +7,22 @@ class UtilsTest extends PHPUnit_Framework_TestCase {
 	 */
 	
 	public function getData () {
-		return [
-			[
-				[
-					'foo' => [
-						'bar' => [
+		return array(
+			array(
+				array(
+					'foo' => array(
+						'bar' => array(
 							'def' => 'abc'
-						],
-						'baz' => [
+						),
+						'baz' => array(
 							'abc' => 'cool'
-						]
-					]
-				],
+						)
+					)
+				),
 				'foo.bar.def',
 				'abc'
-			]
-		];
+			)
+		);
 	}
 	
 	/**
@@ -78,10 +78,10 @@ class UtilsTest extends PHPUnit_Framework_TestCase {
 	}
 	
 	public function getKeysValues () {
-		return [
-			['multi.foo.bar.baz', 'foo'],
-			['multi.foo.baz.bar', 'foo']
-		];
+		return array(
+			array('multi.foo.bar.baz', 'foo'),
+			array('multi.foo.baz.bar', 'foo')
+		);
 	}
 	
 	/**

@@ -5,20 +5,21 @@
  * 
  * @param array $array
  * @param string $key
+ * @param mixed $default
  * @return mixed
  */
-function array_get ($array, $key) {
+function array_get ($array, $key, $default = false) {
 	$keys = explode('.', $key);
 	$key = array_shift($keys);
 	
-	while ( is_array($array) && isset($array[$key]) ) {
+	while (is_array($array) && isset($array[$key])) {
 		$array = $array[$key];
 		
 		$key = array_shift($keys);
 	}
 	
 	if ($key !== null && !isset($array[$key])) {
-		return false;
+		return $default;
 	}
 	
 	return $array;
@@ -39,7 +40,7 @@ function array_set (&$array, $key, $value) {
 	$curs = &$temp;
 	$key = array_shift($keys);
 	
-	while ( is_array($curs) && $key !== null ) {
+	while (is_array($curs) && $key !== null) {
 		$curs = &$curs[$key];
 		
 		$key = array_shift($keys);

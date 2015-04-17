@@ -21,21 +21,36 @@ function views ($key = null, $value = null) {
 }
 
 /**
- * View a view
+ * View a layout
  * 
- * @param string $template
+ * @param string $view
  * @param array $data
  */
-function view ($template, $data = array(), $global = true) {
-	$template = view_path($template);
+function layout ($view, array $data = array()) {
+    $data['view'] = $view;
+    
+    if (!empty($data)) {
+		views('data', $data);
+	}
+    
+    render(view_path(views('templates.layout')), $data);
+}
+
+/**
+ * View a view
+ * 
+ * @param string $view
+ * @param array $data
+ * @param bool $global
+ */
+function view ($view, $data = array(), $global = true) {
+	$view = view_path($view);
 	
-	if (!empty($data) && $global) {
+	if ($global) {
 		views('data', $data);
 	}
 	
-	$global_data = views('data');
-	
-	render($template, $global && $global_data ? $global_data : $data);
+	render($view, empty($data) ? views('data') : $data);
 }
 
 /**
@@ -77,11 +92,21 @@ function view_path ($template) {
  * 
  * @param string $file
  */
-function template_path ($file = '') {
-	static $settings = null;
-	
-	$settings or $settings = router('settings');
+function asset_path ($file = '') {
 	$template = views('templates.template');
+	$folder = templates_folder();
+	$root = router('settings.root');
 	
-	return '/' . trim("/{$settings['root']}/templates/$template/$file", '/');
+	return '/' . trim("/$root/$folder/$template/$file", '/');
+}
+
+/**
+ * Get templates folder
+ * 
+ * @return string
+ */
+function templates_folder () {
+    $directory = chop(views('templates.directory'), '/');
+    
+    return substr($directory, strrpos($directory, '/') + 1);
 }

@@ -78,9 +78,9 @@ function load_files ($files) {
  * 
  * @param string $model
  */
-function load_model ($model) {
-	if (file_exists(app_path("models/$model.php"))) {
-		load_app_file("models/$model");
+function load_model ($model, $path = 'models') {
+	if (file_exists(app_path("$path/$model.php"))) {
+		load_app_file("$path/$model");
 	}
 	
 	function_exists($model = "{$model}_init") and $model();

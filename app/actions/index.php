@@ -11,9 +11,8 @@ function actions_init () {
  * Index action
  */
 function action_index () {
-	view('main', array(
-		'title' => 'Главная страница',
-		'view' => 'index'
+	layout('pages/index', array(
+		'title' => 'Главная страница'
 	));
 }
 
@@ -21,8 +20,7 @@ function action_index () {
  * Page action
  */
 function action_page () {
-	view('main', array(
+	layout('pages/index', array(
 		'title' => 'Доп. страница',
-		'view' => 'page'
 	));
 }

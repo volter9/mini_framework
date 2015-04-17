@@ -17,8 +17,9 @@ return array(
 	),
 	
 	'templates' => array(
-		'directory' => base_path('templates/'),
-		'template' => 'default'
+		'directory' => base_path('views/'),
+		'template'  => 'default',
+		'layout'    => 'main'
 	),
 	
 	'routing' => array(
@@ -26,8 +27,7 @@ return array(
 		'symbols' => array(
 			'/:any' => '/?([\d\w\-_]+)',
 			'/:num' => '/?(\d+)'
-		),
-		'root' => ''
+		)
 	),
 	
 	'hooks' => array(

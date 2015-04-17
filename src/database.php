@@ -59,11 +59,7 @@ function db_connect ($group = 'default') {
  * @return \PDO
  */
 function db_create_connection ($config) {
-	$host     = $config['host'];
-	$user     = $config['user'];
-	$name     = $config['name'];
-	$password = $config['password'];
-	$charset  = $config['charset'];
+	extract($config);
 	
 	try {
 		$db = new PDO("mysql:host=$host;dbname=$name;charset=$charset", $user, $password);
@@ -188,12 +184,12 @@ function db_insert ($table, array $data) {
 		return false;
 	}
 	
-	$query = "INSERT INTO $table (%s) VALUES (%s)";
+	$query = 'INSERT INTO %s (%s) VALUES (%s)';
 	
 	list($keys, $placeholders) = db_prepare_insert($data);
 	
 	return db_query(
-		sprintf($query, $keys, $placeholders), 
+		sprintf($query, $table, $keys, $placeholders), 
 		array_values($data), 
 		DB_INSERT
 	);

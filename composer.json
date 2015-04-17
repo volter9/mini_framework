@@ -5,6 +5,6 @@
 	"license": "MIT",
 	
 	"autoload": {
-		"files": ["api/app.php"]
+		"files": ["src/app.php"]
 	}
 }

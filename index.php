@@ -1,7 +1,7 @@
 <?php
 
 /**
- * mini_framework is a simple framework in procedural/functional PHP
+ * mini_framework is a simple framework in procedural/functional PHP5
  *
  * @author volter9
  */
@@ -19,7 +19,7 @@ define('MF_DEBUG'   , true);
 
 $time = microtime(true);
 
-/** App */
+/** Require all files */
 require 'vendor/autoload.php';
 
 /** Boot the app */

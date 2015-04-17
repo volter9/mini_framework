@@ -17,7 +17,7 @@ return array(
 	),
 	
 	'templates' => array(
-		'directory' => MF_BASEPATH . 'templates/',
+		'directory' => base_path('templates/'),
 		'template' => 'default'
 	),
 	
@@ -31,8 +31,8 @@ return array(
 	),
 	
 	'hooks' => array(
-		MF_APP_DIR . 'bootstrap',
-		MF_APP_DIR . 'routes'
+		app_path('bootstrap'),
+		app_path('routes')
 	),
 	
 	'autoload' => array(
@@ -42,5 +42,9 @@ return array(
 	
 	'i18n' => array(
 	    'default' => 'ru_RU'
+	),
+	
+	'validation' => array(
+	    'validators' => 'validators'
 	)
 );

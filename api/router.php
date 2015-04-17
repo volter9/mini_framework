@@ -1,12 +1,6 @@
 <?php
 
 /**
- * Router
- * 
- * @package FFFramework
- */
-
-/**
  * Router storage
  * 
  * @param string $key
@@ -254,7 +248,7 @@ function get_url () {
  * @param string $root
  * @return string
  */
-function get_base_url ($base, $root) {
+function get_baseurl ($base, $root) {
     $base   = trim($base, '/');
     $root   = trim($root, '/');
     $lenght = strlen($root);
@@ -272,7 +266,7 @@ function show_404 () {
 	
 	emit('router:not_found');
 	
-	view('404'); exit;
+	view('404') and exit;
 }
 
 /**
@@ -281,8 +275,7 @@ function show_404 () {
  * @param Exception $exception
  */
 function show_error (Exception $exception) {
-	view('error', array(
-		'exception' => $exception
-	));
-	exit;
+    $data = array('exception' => $exception);
+    
+	view('error', $data) and exit;
 }

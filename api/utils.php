@@ -27,7 +27,7 @@ function repo ($default = array(), $readonly = false) {
 		// Setters
 		if (!$readonly && $key !== null && $value !== null) {
 			if (strpos($key, '.') !== false) {
-				return md_set($repo, $key, $value);
+				return array_set($repo, $key, $value);
 			}
 			else {
 				if (
@@ -52,7 +52,7 @@ function repo ($default = array(), $readonly = false) {
 		
 		// Getters
 		if (strpos($key, '.') !== false) {
-			return md_get($repo, $key);
+			return array_get($repo, $key);
 		}
 		else if ( isset($repo[$key]) ) {
 			return $repo[$key];
@@ -63,61 +63,6 @@ function repo ($default = array(), $readonly = false) {
 		
 		return $repo;
 	};
-}
-
-/**
- * Get key using dot notation in multidimensional array
- * 
- * @link https://gist.github.com/Volter9/e8568303a09716e72039
- * @param array $array
- * @param string $key
- * @return mixed
- */
-function md_get ($array, $key) {
-	$keys = explode('.', $key);
-	$key = array_shift($keys);
-	
-	while ( is_array($array) && isset($array[$key]) ) {
-		$array = $array[$key];
-		
-		$key = array_shift($keys);
-	}
-	
-	if ($key !== null && !isset($array[$key])) {
-		return false;
-	}
-	
-	return $array;
-}
-
-/**
- * Set key using dot notation in multidimensional array
- * 
- * @link https://gist.github.com/Volter9/e8568303a09716e72039
- * @param array $array
- * @param string $key
- * @param mixed $value
- * @return mixed
- */
-function md_set (&$array, $key, $value) {
-	$keys = explode('.', $key);
-	
-	$temp = $array;
-	$curs = &$temp;
-	$key = array_shift($keys);
-	
-	while ( is_array($curs) && $key !== null ) {
-		$curs = &$curs[$key];
-		
-		$key = array_shift($keys);
-		
-		if ( !isset($curs[$key]) ) {
-			$curs[$key] = array();
-		}
-	}
-	
-	$curs = $value;
-	$array = $temp;
 }
 
 /**

@@ -29,7 +29,7 @@ function load_php ($file, $ignore = false, $ext = '.php') {
 	if ($exists && !loads($file) || $ignore) {
 		loads($file, true);
 		
-		return require($filepath);
+		return require $filepath;
 	}
 	else if (!$exists) {
 		throw new Exception("File at '$filepath' is not exists!");
@@ -44,7 +44,7 @@ function load_php ($file, $ignore = false, $ext = '.php') {
  * @return mixed
  */
 function load_app_file ($file, $ignore = false) {
-	return load_php(MF_APP_DIR . $file, $ignore);
+	return load_php(app_path($file), $ignore);
 }
 
 /**
@@ -54,8 +54,8 @@ function load_app_file ($file, $ignore = false) {
  * @param bool $ignore
  * @return mixed
  */
-function load_api ($api, $ignore = false) {
-	return load_php(MF_API_DIR . $api, $ignore);
+function load_api ($file, $ignore = false) {
+	return load_php(api_path($file), $ignore);
 }
 
 /**
@@ -79,15 +79,11 @@ function load_files ($files) {
  * @param string $model
  */
 function load_model ($model) {
-	if (file_exists(MF_APP_DIR . "models/$model.php")) {
+	if (file_exists(app_path("models/$model.php"))) {
 		load_app_file("models/$model");
 	}
 	
-	$model = "{$model}_init";
-	
-	if (function_exists($model)) {
-		$model();
-	}
+	function_exists($model = "{$model}_init") and $model();
 }
 
 /**

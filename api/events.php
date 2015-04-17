@@ -36,7 +36,13 @@ function emit ($event) {
 		return false;
 	}
 	
+	$result = array();
+	
 	foreach ($event as $callback) {
-		call_user_func_array($callback, $args);
+		if ($value = call_user_func_array($callback, $args)) {
+		    $result[] = $value;
+		}
 	}
+	
+	return $result;
 }

@@ -22,7 +22,9 @@ function lang ($key = null, $value = null) {
  * @param string $path
  */
 function load_language ($lang, $path) {
-	lang($lang, load_php($path));
+    $default = lang('settings.default');
+    
+	lang($lang, load_php("$path/$default"));
 	
 	if (!lang('current')) {
         lang('current', $lang);

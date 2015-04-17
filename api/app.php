@@ -1,7 +1,7 @@
 <?php
 
 /**
- * FFFramework constants
+ * mini_framework constants
  * 
  * @const string MF_VERSION Version of mini_blog
  * @const string MF_API_DIR Path to system files
@@ -12,6 +12,7 @@ define('MF_API_DIR', __DIR__ . '/');
 /**
  * Head start requirements
  */
+require MF_API_DIR . 'array.php';
 require MF_API_DIR . 'utils.php';
 require MF_API_DIR . 'loader.php';
 require MF_API_DIR . 'config.php';
@@ -39,13 +40,15 @@ function system_load ($config) {
 	load_system();
 	
 	router('settings', $config('routing'));
-	router('settings.root', get_base_url(MF_BASEPATH, $_SERVER['DOCUMENT_ROOT']));
+	router('settings.root', get_baseurl(MF_BASEPATH, $_SERVER['DOCUMENT_ROOT']));
 	
 	views('templates', $config('templates'));
 	lang('settings', $config('i18n'));
-	storage('validation', $config('validation'));
 	
 	db($config('database'));
+	
+	storage('validation', $config('validation'));
+	storage('config', $config);
 }
 
 /**
@@ -78,4 +81,34 @@ function app_load_models ($models) {
 	foreach ($models as $model) {
 		load_model($model);
 	}
+}
+
+/**
+ * Get path relative from basepath to file
+ * 
+ * @param string $file
+ * @return string
+ */
+function base_path ($file) {
+    return MF_BASEPATH . $file;
+}
+
+/**
+ * Get path to app file
+ * 
+ * @param string $file
+ * @return string
+ */
+function app_path ($file) {
+    return MF_APP_DIR . $file;
+}
+
+/**
+ * Get path to api file
+ * 
+ * @param string $file
+ * @return string
+ */
+function api_path ($file) {
+    return MF_API_DIR . $file;
 }

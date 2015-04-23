@@ -62,13 +62,15 @@ function array_set (&$array, $key, $value) {
  * @return array
  */
 function array_extract (array $array, array $keys) {
-    foreach ($array as $key => $value) {
-        if (!in_array($key, $keys)) {
-            unset($array[$key]);
+    $result = array();
+    
+    foreach ($keys as $key) {
+        if (isset($array[$key])) {
+            $result[$key] = $array[$key];
         }
     }
     
-    return $array;
+    return $result;
 }
 
 /**
@@ -78,7 +80,7 @@ function array_extract (array $array, array $keys) {
  * @param array $keys
  * @return array
  */
-function array_except (array $array, array $keys) {
+function array_exclude (array $array, array $keys) {
     foreach ($keys as $key) {
         unset($array[$key]);
     }

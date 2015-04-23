@@ -89,21 +89,6 @@ function array_exclude (array $array, array $keys) {
 }
 
 /**
- * 
- * 
- * 
- */
-function array_transfer (array $array, $field, $default = '') {
-	$result = array();
-	
-	foreach ($array as $key => $value) {
-		$result[$key] = isset($value[$field]) ? $value[$field] : $default;
-	}
-	
-	return $result;
-}
-
-/**
  * Get key value from multidimensional array one level deep
  * 
  * @param array $array
@@ -129,10 +114,30 @@ function array_pluck (array $array, $key) {
  * @param array $array
  * @param string $key
  * @param string $value
+ * @return array
  */
 function array_join (array $array, $key, $value) {
     return array_combine(
         array_pluck($array, $key),
         array_pluck($array, $value)
     );
+}
+
+/**
+ * Similar to array_join, but uses $array's key as key 
+ * for the result
+ * 
+ * @param array $array
+ * @param string $field
+ * @param mixed $default
+ * @return array
+ */
+function array_transfer (array $array, $field, $default = '') {
+	$result = array();
+	
+	foreach ($array as $key => $value) {
+		$result[$key] = isset($value[$field]) ? $value[$field] : $default;
+	}
+	
+	return $result;
 }

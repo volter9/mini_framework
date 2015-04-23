@@ -49,6 +49,7 @@ function db_create_connection ($config) {
         $db = new PDO("mysql:host=$host;dbname=$name;charset=$charset", $user, $password);
         $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         $db->setAttribute(PDO::ATTR_EMULATE_PREPARES, FALSE);
+        $db->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
         
         return $db;
     }

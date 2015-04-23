@@ -38,7 +38,8 @@ function app_boot ($config) {
 /**
  * Loads the system
  * 
- * Useful for unit testing purposes
+ * Useful for unit testing purposes or exclude routing from loading
+ * process
  */
 function system_load ($config) {
     load_system();

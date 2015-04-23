@@ -86,25 +86,17 @@ function view_path ($template) {
 }
 
 /**
- * Path to template file
+ * URL to template file
  * 
  * @param string $file
  */
-function asset_path ($file = '') {
+function asset_url ($file = '') {
     $template = views('templates.template');
-    $folder = templates_folder();
+    
+    $folder = chop(views('templates.directory'), '/');
+    $folder = last($folder, '/');
+    
     $root = router('settings.root');
     
-    return '/' . trim("/$root/$folder/$template/$file", '/');
-}
-
-/**
- * Get templates folder
- * 
- * @return string
- */
-function templates_folder () {
-    $directory = chop(views('templates.directory'), '/');
-    
-    return substr($directory, strrpos($directory, '/') + 1);
+    return deduplicate("/$root/$folder/$template/$file", '/');
 }

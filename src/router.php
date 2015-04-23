@@ -38,12 +38,12 @@ function route ($url, $action) {
 function router_find ($url, $method) {
     $routes = router('routes');
     
-    foreach ($routes as $route) {
-        $routeUrl = route_process($route['url']);
+    foreach ($routes as $found) {
+        $routeUrl = route_process($found['url']);
         $pattern = "#^{$routeUrl}\$#i";
         
         if (
-            in_array($route['method'], array('*', $method)) &&
+            in_array($found['method'], array('*', $method)) &&
             preg_match($pattern, $url, $matches)
         ) {
             array_shift($matches);
@@ -52,7 +52,7 @@ function router_find ($url, $method) {
                 return is_numeric($v) ? (int)$v : $v;
             }, $matches);
             
-            return compact('route', 'matches');
+            return compact('found', 'matches');
         }
     }
     
@@ -137,7 +137,7 @@ function fetch_route ($url, $method) {
         return show_404();
     }
     
-    emit('router:found', $found['route']);
+    emit('router:found', $found['found']);
     
     return $found;
 }
@@ -152,7 +152,7 @@ function dispatch ($found) {
         return show_404();
     }
     
-    $route  = $found['route'];
+    $route  = $found['found'];
     $action = "action_{$route['name']}";
     
     router('route', $found);

@@ -94,7 +94,7 @@ function asset_url ($file = '') {
     $template = views('templates.template');
     
     $folder = chop(views('templates.directory'), '/');
-    $folder = last($folder, '/');
+    $folder = after($folder, '/');
     
     $root = router('settings.root');
     

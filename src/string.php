@@ -5,7 +5,7 @@
  * 
  * @param string $haystack
  * @param string $needle
- * @return string
+ * @return bool
  */
 function starts_with ($haystack, $needle) {
     return strpos($haystack, $needle) === 0;
@@ -16,22 +16,22 @@ function starts_with ($haystack, $needle) {
  * 
  * @param string $haystack
  * @param string $needle
- * @return string
+ * @return bool
  */
 function ends_with ($haystack, $needle) {
     return strpos($haystack, $needle) === strlen($haystack) - strlen($needle);
 }
 
 /**
- * Last occurence after needle
+ * Get last occurence after needle
  * 
  * @param string $haystack
  * @param string $needle
- * @param bool $without_needle
+ * @param bool $with_needle
  * @return string
  */
-function last ($haystack, $needle, $without_needle = true) {
-    return substr($haystack, strrpos($haystack, $needle) + $without_needle);
+function after ($haystack, $needle, $with_needle = false) {
+    return substr($haystack, strrpos($haystack, $needle) + strlen($needle) * !$with_needle);
 }
 
 /**
@@ -60,5 +60,5 @@ function exclude ($haystack, $needle) {
         return $haystack;
     }
     
-    return implode('', explode($needle, $haystack));
+    return str_replace($needle, '', $haystack);
 }

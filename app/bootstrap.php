@@ -34,9 +34,9 @@ defined('MF_DEBUG') and bind('router:not_found', function () {
     };
     
     $route    = $bool2str(router('route'));
-    $file     = $bool2str(file_exists(router('route.route.action') . '.php'));
+    $file     = $bool2str(file_exists(router('route.found.action') . '.php'));
     $function = $bool2str(function_exists('actions_init'));
-    $action   = $bool2str(function_exists('action_' . router('route.route.name')));
+    $action   = $bool2str(function_exists('action_' . router('route.found.name')));
     
     echo "<!-- Route found: $route, ";
     echo "File found: $file, ";

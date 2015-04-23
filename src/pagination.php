@@ -46,7 +46,7 @@ function pagination_generate ($total, $ipp, $page) {
         }
     }
     
-    $limit = (int)($ipp - ($offset % $ipp))
+    $limit = (int)($ipp - ($offset % $ipp));
     
     return compact('limit', 'offset', 'pages', 'page', 'pagination');
 }
@@ -64,7 +64,7 @@ function paginate_query ($query, array $data, $limit, $page) {
     $countQuery = paginate_query_replace_select($query);
     $countQuery = pagiante_query_remove_joins($countQuery);
     
-    $count = db_query($countQuery, $data, DB_AGGREGATE);
+    $count = current(db_select($countQuery, $data, true));
     
     $pages = pagination_generate($count, $limit, $page);
     $query .= ' LIMIT ? OFFSET ?';

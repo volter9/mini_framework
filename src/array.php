@@ -89,6 +89,21 @@ function array_exclude (array $array, array $keys) {
 }
 
 /**
+ * 
+ * 
+ * 
+ */
+function array_transfer (array $array, $field, $default = '') {
+	$result = array();
+	
+	foreach ($array as $key => $value) {
+		$result[$key] = isset($value[$field]) ? $value[$field] : $default;
+	}
+	
+	return $result;
+}
+
+/**
  * Get key value from multidimensional array one level deep
  * 
  * @param array $array

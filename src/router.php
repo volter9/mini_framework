@@ -106,7 +106,7 @@ function route_replace ($url, $params) {
     $regex = '/:(\w+)\??/';
     
     if (count($params) !== 0) {
-        $regex = array_fill(0, count($params), $regex);
+        $regex = array_fill(0, count($params), '/:(\w+)\??/');
     }
     else {
         $params = '';
@@ -122,7 +122,7 @@ function route_replace ($url, $params) {
  * @return string
  */
 function route_cleanup ($url) {
-    return chop(deduplicate($url, '/'), '/');
+    return chop(preg_replace('/:(\w+)\??/', '', $url), '/');
 };
 
 /**

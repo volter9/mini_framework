@@ -271,10 +271,10 @@ function prepare ($query, array $parameters, PDO $pdo = null) {
     
     try {
         $statement = $pdo->prepare($query);
-        $statement->execute($data); 
+        $statement->execute($parameters); 
     }
     catch (PDOException $e) {
-        db_prepare_exception($e, $query, $data);
+        db_prepare_exception($e, $query, $parameters);
     }
     
     return $statement;

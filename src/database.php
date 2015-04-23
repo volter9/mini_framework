@@ -88,11 +88,13 @@ function db_prepare_exception (Exception $e, $query, array $data) {
  * Select information from 
  * 
  * @param string $query
+ * @param array $data
  * @param bool $one
+ * @param \PDO $pdo
  * @return array|false
  */
-function db_select ($query, array $data = array(), $one = false) {
-    $statement = prepare($query, $data);
+function db_select ($query, array $data = array(), $one = false, PDO $pdo = null) {
+    $statement = prepare($query, $data, $pdo);
     
     if ($statement->rowCount() > 0) {
         return $one ? $statement->fetch() : $statement->fetchAll();
@@ -106,9 +108,10 @@ function db_select ($query, array $data = array(), $one = false) {
  * 
  * @param string $table
  * @param array $data
+* @param \PDO $pdo
  * @return int
  */
-function db_insert ($table, array $data) {
+function db_insert ($table, array $data, PDO $pdo) {
     if (!$table || empty($data)) {
         return 0;
     }
@@ -117,7 +120,11 @@ function db_insert ($table, array $data) {
     
     list($keys, $placeholders) = db_prepare_insert($data);
     
-    $statement = prepare(sprintf($query, $table, $keys, $placeholders), array_values($data));
+    $statement = prepare(
+        sprintf($query, $table, $keys, $placeholders), 
+        array_values($data), 
+        $pdo
+    );
     
     return $statement->rowCount() ? $pdo->lastInsertId() : 0;
 }
@@ -151,9 +158,10 @@ function db_prepare_insert (array $data) {
  * @param string $table
  * @param array $data
  * @param array $where
+ * @param \PDO $pdo
  * @return bool
  */
-function db_update ($table, array $data, array $where = array()) {
+function db_update ($table, array $data, array $where = array(), PDO $pdo) {
     if (empty($data)) {
         return false;
     }
@@ -167,7 +175,7 @@ function db_update ($table, array $data, array $where = array()) {
     );
     
     $update = db_prepare_update($data);
-    $statement = prepare(sprintf($query, $update, $where['query']), $values);
+    $statement = prepare(sprintf($query, $update, $where['query']), $values, $pdo);
     
     return $statement->rowCount() > 0;
 }
@@ -193,13 +201,14 @@ function db_prepare_update (array $data) {
  * 
  * @param string $table
  * @param array $where
+ * @param \PDO $pdo
  * @return bool
  */
-function db_delete ($table, array $where = array()) {
+function db_delete ($table, array $where = array(), PDO $pdo = null) {
     $query = "DELETE FROM `$table` %s";
     $where = db_prepare_where($where);
     
-    $statement = prepare(sprintf($query, $where['query']), $where['data']);
+    $statement = prepare(sprintf($query, $where['query']), $where['data'], $pdo);
     
     return $statement->rowCount() > 0;
 }

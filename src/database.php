@@ -112,7 +112,7 @@ function db_select ($query, array $data = array(), $one = false, PDO $pdo = null
 * @param \PDO $pdo
  * @return int
  */
-function db_insert ($table, array $data, PDO $pdo) {
+function db_insert ($table, array $data, PDO $pdo = null) {
     if (!$table || empty($data)) {
         return 0;
     }
@@ -162,7 +162,7 @@ function db_prepare_insert (array $data) {
  * @param \PDO $pdo
  * @return bool
  */
-function db_update ($table, array $data, array $where = array(), PDO $pdo) {
+function db_update ($table, array $data, array $where = array(), PDO $pdo = null) {
     if (empty($data)) {
         return false;
     }

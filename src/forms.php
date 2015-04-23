@@ -3,19 +3,25 @@
 /**
  * Form building function
  * 
- * @todo
  * @package mini_blog
  */
 
+/**
+ * Forms storage
+ * 
+ * @param mixed $key
+ * @param mixed $value
+ * @return mixed
+ */
 function forms ($key = null, $value = null) {
-	static $repo;
-	
-	$repo or $repo = repo(array(
-		'providers' => array(),
-		'elements' => array()
-	));
-	
-	return $repo($key, $value);
+    static $repo;
+    
+    $repo or $repo = repo(array(
+        'providers' => array(),
+        'elements'  => array()
+    ));
+    
+    return $repo($key, $value);
 }
 
 /**
@@ -25,7 +31,7 @@ function forms ($key = null, $value = null) {
  * @param Closure $callback
  */
 function form_provider ($name, Closure $callback) {
-	forms('providers', array($name => $callback));
+    forms('providers', array($name => $callback));
 }
 
 /**
@@ -35,12 +41,12 @@ function form_provider ($name, Closure $callback) {
  * @param array $data
  */
 function build_form (array $scheme, array $data) {
-	$view = $scheme['view'];
-	
-	view($view, array(
-		'scheme' => $scheme,
-		'data' => $data
-	));
+    $view = $scheme['view'];
+    
+    view($view, array(
+        'scheme' => $scheme,
+        'data' => $data
+    ));
 }
 
 /**
@@ -50,13 +56,13 @@ function build_form (array $scheme, array $data) {
  * @return void
  */
 function build_element ($type, array $data) {
-	if (strpos($type, ':') !== false) {
-		list($type, $provider) = explode(':', $type);
-		
-		return build_element_provider($type, $provider, $data);
-	}
-	
-	view("forms/elements/$type", $data);
+    if (strpos($type, ':') !== false) {
+        list($type, $provider) = explode(':', $type);
+        
+        return build_element_provider($type, $provider, $data);
+    }
+    
+    view("forms/elements/$type", $data);
 }
 
 /**
@@ -67,15 +73,15 @@ function build_element ($type, array $data) {
  * @param array $data
  */
 function build_element_provider ($type, $provider, array $data) {
-	$data_provider = forms("providers.$provider");
-	
-	if (!$data_provider) {
-		throw new Exception(
-			"Provider '$provider' doesn't exists!"
-		);
-	}
-	
-	view("forms/elements/$type", array_merge($data, array(
-		'data' => $data_provider()
-	)));
+    $data_provider = forms("providers.$provider");
+    
+    if (!$data_provider) {
+        throw new Exception(
+            "Provider '$provider' doesn't exists!"
+        );
+    }
+    
+    view("forms/elements/$type", array_merge($data, array(
+        'data' => $data_provider()
+    )));
 }

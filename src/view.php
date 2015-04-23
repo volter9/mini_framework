@@ -3,7 +3,7 @@
 /**
  * View component
  * 
- * @package FFFramework
+ * @package mini_framework
  */
 
 /**
@@ -14,10 +14,10 @@
  * @return mixed
  */
 function views ($key = null, $value = null) {
-	static $repo = null;
-	$repo or $repo = repo();
-	
-	return $repo($key, $value);
+    static $repo = null;
+    $repo or $repo = repo();
+    
+    return $repo($key, $value);
 }
 
 /**
@@ -30,8 +30,8 @@ function layout ($view, array $data = array()) {
     $data['view'] = $view;
     
     if (!empty($data)) {
-		views('data', $data);
-	}
+        views('data', $data);
+    }
     
     render(view_path(views('templates.layout')), $data);
 }
@@ -44,13 +44,11 @@ function layout ($view, array $data = array()) {
  * @param bool $global
  */
 function view ($view, $data = array(), $global = true) {
-	$view = view_path($view);
-	
-	if ($global) {
-		views('data', $data);
-	}
-	
-	render($view, empty($data) ? views('data') : $data);
+    if ($global) {
+        views('data', $data);
+    }
+    
+    render(view_path($view), empty($data) ? views('data') : $data);
 }
 
 /**
@@ -72,19 +70,19 @@ function render ($__view__, array $__data__) {
  * @return string
  */
 function view_path ($template) {
-	static $views = null;
-	
-	if ($views === null) {
-		$views = views('templates');
-	}
-	
-	$skin = $views['template'];
-	
-	if (strpos($template, ':') !== false) {
-		list($skin, $template) = explode(':', $template);
-	}
-	
-	return "{$views['directory']}{$skin}/html/$template.php";
+    static $views = null;
+    
+    if ($views === null) {
+        $views = views('templates');
+    }
+    
+    $skin = $views['template'];
+    
+    if (strpos($template, ':') !== false) {
+        list($skin, $template) = explode(':', $template);
+    }
+    
+    return "{$views['directory']}{$skin}/html/$template.php";
 }
 
 /**
@@ -93,11 +91,11 @@ function view_path ($template) {
  * @param string $file
  */
 function asset_path ($file = '') {
-	$template = views('templates.template');
-	$folder = templates_folder();
-	$root = router('settings.root');
-	
-	return '/' . trim("/$root/$folder/$template/$file", '/');
+    $template = views('templates.template');
+    $folder = templates_folder();
+    $root = router('settings.root');
+    
+    return '/' . trim("/$root/$folder/$template/$file", '/');
 }
 
 /**

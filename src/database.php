@@ -1,21 +1,6 @@
 <?php
 
 /**
- * Query modes
- * 
- * @const int DB_ONE       Select only one row
- * @const int DB_CRUD      Return boolean from CRUD operation
- * @const int DB_INSERT    Return insert id from insert query
- * @const int DB_SIMPLE    Return simple in case of success true
- * @const int DB_AGGREGATE Return first column of query
- */
-define('DB_ONE'      , 1);
-define('DB_CUD'      , 2);
-define('DB_INSERT'   , 4);
-define('DB_SIMPLE'   , 8);
-define('DB_AGGREGATE', 16);
-
-/**
  * Database storage
  * 
  * @param string $key
@@ -23,11 +8,10 @@ define('DB_AGGREGATE', 16);
  * @return mixed
  */
 function db ($key = null, $value = null) {
-	static $repo = null;
-	
-	$repo or $repo = repo();
-	
-	return $repo($key, $value);
+    static $repo = null;
+    $repo or $repo = repo();
+    
+    return $repo($key, $value);
 }
 
 /**
@@ -36,20 +20,20 @@ function db ($key = null, $value = null) {
  * @param string
  */
 function db_connect ($group = 'default') {
-	if (db("$group.connection")) {
-		return;
-	}
-	
-	$config = db($group);
-	
-	if (!$config) {
-		throw new Exception("Group '$group' does not exists");
-	}
-	
-	$db = db_create_connection($config);
-	
-	db("$group.connection", $db);
-	db('active', $db);
+    if (db("$group.connection")) {
+        return;
+    }
+    
+    $config = db($group);
+    
+    if (!$config) {
+        throw new Exception("Group '$group' does not exists");
+    }
+    
+    $db = db_create_connection($config);
+    
+    db("$group.connection", $db);
+    db('active', $db);
 }
 
 /**
@@ -59,79 +43,18 @@ function db_connect ($group = 'default') {
  * @return \PDO
  */
 function db_create_connection ($config) {
-	extract($config);
-	
-	try {
-		$db = new PDO("mysql:host=$host;dbname=$name;charset=$charset", $user, $password);
-		$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-		$db->setAttribute(PDO::ATTR_EMULATE_PREPARES, FALSE);
-		
-		return $db;
-	}
-	catch (PDOException $exception) {
-		show_error($exception);
-	}
-}
-
-/**
- * Perform an SQL query
- * 
- * @param string $query
- * @param array $data
- * @param int $mode
- * @return array|int|bool
- */
-function db_query ($query, array $data = array(), $mode = 0) {
-	$db = db('active');
-	
-	try {
-		$statement = $db->prepare($query);
-		$statement->execute($data);	
-	}
-	catch (PDOException $e) {
-		db_prepare_exception($e, $query, $data);
-	}
-	
-	return db_return($mode, $statement, $db);
-}
-
-/**
- * Validate query for mode and return appropriate data
- * 
- * @param int $mode
- * @param PDOStatement $statement
- * @param PDO $db
- * @return mixed
- */
-function db_return ($mode, PDOStatement $statement, PDO $db) {
-	static $modes = null;
-	
-	$modes or $modes = array(DB_ONE, DB_SIMPLE, DB_AGGREGATE, 0);
-	$count = $statement->rowCount();
-	
-	if (in_array($mode, $modes)) {
-		if ($count == 0) return false;
-	}
-	
-	switch ($mode) {
-		case DB_SIMPLE:
-			return true;
-		
-		case DB_ONE:
-			return $statement->fetch(PDO::FETCH_ASSOC);
-		
-		case DB_CUD:
-			return $count >= 0;
-		
-		case DB_INSERT:
-			return $db->lastInsertId();
-		
-		case DB_AGGREGATE:
-			return $statement->fetchColumn();
-		
-		default:
-			return $statement->fetchAll(PDO::FETCH_ASSOC);
-	}
+    extract($config);
+    
+    try {
+        $db = new PDO("mysql:host=$host;dbname=$name;charset=$charset", $user, $password);
+        $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $db->setAttribute(PDO::ATTR_EMULATE_PREPARES, FALSE);
+        
+        return $db;
+    }
+    catch (PDOException $exception) {
+        show_error($exception);
+    }
 }
 
 /**
@@ -142,23 +65,23 @@ function db_return ($mode, PDOStatement $statement, PDO $db) {
  * @param array $data
  */
 function db_prepare_exception (Exception $e, $query, array $data) {
-	$message = $e->getMessage();
-	
-	$query = preg_replace('/^\s+/m', '', $query);
-	
-	ob_start();
-	var_dump($data);
-	$values = preg_replace(
-		'/\<\/?pre[^\>]*\>/i', '', ob_get_clean()
-	);
-	
-	throw new Exception(
-		sprintf('
-			<p>%s</p>
-			<p>SQL: <pre>%s</pre></p>
-			<p>Values: <pre>%s</pre></p>
-		', $message, $query, $values)
-	);
+    $message = $e->getMessage();
+    
+    $query = preg_replace('/^\s+/m', '', $query);
+    
+    ob_start();
+    var_dump($data);
+    $values = preg_replace(
+        '/\<\/?pre[^\>]*\>/i', '', ob_get_clean()
+    );
+    
+    throw new Exception(
+        sprintf('
+            <p>%s</p>
+            <p>SQL: <pre>%s</pre></p>
+            <p>Values: <pre>%s</pre></p>
+        ', $message, $query, $values)
+    );
 }
 
 /**
@@ -169,7 +92,13 @@ function db_prepare_exception (Exception $e, $query, array $data) {
  * @return array|false
  */
 function db_select ($query, array $data = array(), $one = false) {
-	return db_query($query, $data, (int)$one);
+    $statement = prepare($query, $data);
+    
+    if ($statement->rowCount() > 0) {
+        return $one ? $statement->fetch() : $statement->fetchAll();
+    }
+    
+    return array();
 }
 
 /**
@@ -180,19 +109,17 @@ function db_select ($query, array $data = array(), $one = false) {
  * @return int
  */
 function db_insert ($table, array $data) {
-	if (!$table || empty($data)) {
-		return false;
-	}
-	
-	$query = 'INSERT INTO %s (%s) VALUES (%s)';
-	
-	list($keys, $placeholders) = db_prepare_insert($data);
-	
-	return db_query(
-		sprintf($query, $table, $keys, $placeholders), 
-		array_values($data), 
-		DB_INSERT
-	);
+    if (!$table || empty($data)) {
+        return 0;
+    }
+    
+    $query = 'INSERT INTO %s (%s) VALUES (%s)';
+    
+    list($keys, $placeholders) = db_prepare_insert($data);
+    
+    $statement = prepare(sprintf($query, $table, $keys, $placeholders), array_values($data));
+    
+    return $statement->rowCount() ? $pdo->lastInsertId() : 0;
 }
 
 /**
@@ -202,20 +129,20 @@ function db_insert ($table, array $data) {
  * @return array
  */
 function db_prepare_insert (array $data) {
-	$keys = implode(',', 
-		array_map(function ($value) {			
-			return "`$value`";
-		}, array_keys($data))
-	);
-	
-	$placeholders = chop(
-		str_repeat('?,', count($data)), ','
-	);
-	
-	return array(
-		$keys,
-		$placeholders
-	);
+    $keys = implode(',', 
+        array_map(function ($value) {           
+            return "`$value`";
+        }, array_keys($data))
+    );
+    
+    $placeholders = chop(
+        str_repeat('?,', count($data)), ','
+    );
+    
+    return array(
+        $keys,
+        $placeholders
+    );
 }
 
 /**
@@ -227,25 +154,22 @@ function db_prepare_insert (array $data) {
  * @return bool
  */
 function db_update ($table, array $data, array $where = array()) {
-	if (empty($data)) {
-		return false;
-	}
-	
-	$query = "UPDATE $table SET %s %s";
-	$where = db_prepare_where($where);
-	
-	$values = array_merge(
-		array_values($data), 
-		array_values($where['data'])
-	);
-	
-	$update = db_prepare_update($data);
-	
-	return db_query(
-		sprintf($query, $update, $where['query']), 
-		$values, 
-		DB_CUD
-	);
+    if (empty($data)) {
+        return false;
+    }
+    
+    $query = "UPDATE $table SET %s %s";
+    $where = db_prepare_where($where);
+    
+    $values = array_merge(
+        array_values($data), 
+        array_values($where['data'])
+    );
+    
+    $update = db_prepare_update($data);
+    $statement = prepare(sprintf($query, $update, $where['query']), $values);
+    
+    return $statement->rowCount() > 0;
 }
 
 /**
@@ -255,13 +179,13 @@ function db_update ($table, array $data, array $where = array()) {
  * @return string
  */
 function db_prepare_update (array $data) {
-	$update = array();
-	
-	foreach ($data as $key => $value) {
-		$update[] = "$key = ?";
-	}
-	
-	return implode(',', $update);
+    $update = array();
+    
+    foreach ($data as $key => $value) {
+        $update[] = "`$key` = ?";
+    }
+    
+    return implode(',', $update);
 }
 
 /**
@@ -272,14 +196,12 @@ function db_prepare_update (array $data) {
  * @return bool
  */
 function db_delete ($table, array $where = array()) {
-	$query = "DELETE FROM $table %s";
-	$where = db_prepare_where($where);
-	
-	return db_query(
-		sprintf($query, $where['query']), 
-		$where['data'], 
-		DB_CUD
-	);
+    $query = "DELETE FROM `$table` %s";
+    $where = db_prepare_where($where);
+    
+    $statement = prepare(sprintf($query, $where['query']), $where['data']);
+    
+    return $statement->rowCount() > 0;
 }
 
 /**
@@ -290,20 +212,20 @@ function db_delete ($table, array $where = array()) {
  * @return array
  */
 function db_prepare_where (array $where = array()) {
-	if (empty($where)) {
-		return array('query' => '', 'data' => $where);
-	}
-	
-	$query = 'WHERE ';
-	
-	foreach (array_keys($where) as $field) {
-		$query .= db_prepare_where_field($field);
-	}
-	
-	return array(
-		'query' => trim(chop($query, 'AND OR')),
-		'data' => array_values($where)
-	);
+    if (empty($where)) {
+        return array('query' => '', 'data' => $where);
+    }
+    
+    $query = 'WHERE ';
+    
+    foreach (array_keys($where) as $field) {
+        $query .= db_prepare_where_field($field);
+    }
+    
+    return array(
+        'query' => trim(chop($query, 'AND OR')),
+        'data' => array_values($where)
+    );
 }
 
 /**
@@ -313,16 +235,38 @@ function db_prepare_where (array $where = array()) {
  * @return string
  */
 function db_prepare_where_field ($field) {
-	$condition = 'AND';
-	
-	if (strpos($field, '|') !== false) {
-		list($field, $condition) = explode('|', $field);
-	}
-	
-	$fragments = explode('[', $field);
-	
-	$field = $fragments[0];
-	$type = strtoupper(trim($fragments[1], '[]'));
-	
-	return "$field $type ? $condition ";
+    $condition = 'AND';
+    
+    if (strpos($field, '|') !== false) {
+        list($field, $condition) = explode('|', $field);
+    }
+    
+    $fragments = explode('[', $field);
+    
+    $field = $fragments[0];
+    $type = strtoupper(trim($fragments[1], '[]'));
+    
+    return "`$field` $type ? $condition ";
+}
+
+/**
+ * Prepare a PDO statement
+ * 
+ * @param string $query
+ * @param array $parameters
+ * @param \PDO $pdo
+ * @return \PDOStatement
+ */
+function prepare ($query, array $parameters, PDO $pdo = null) {
+    $pdo = $pdo ? $pdo : db('active');
+    
+    try {
+        $statement = $pdo->prepare($query);
+        $statement->execute($data); 
+    }
+    catch (PDOException $e) {
+        db_prepare_exception($e, $query, $data);
+    }
+    
+    return $statement;
 }

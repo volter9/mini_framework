@@ -20,11 +20,11 @@ define('MF_DEBUG'   , true);
 
 $time = microtime(true);
 
-/** Require all files */
+/** Require composer */
 require 'vendor/autoload.php';
 
 /** Boot the app */
-app_boot(sprintf('%sconfig', MF_APP_DIR));
+app_boot(app_path('config'));
 
-/** Showing debug information */
+/** Show some debug information */
 defined('MF_DEBUG') and printf('<!-- Execution time: %.5f -->', microtime(true) - $time);

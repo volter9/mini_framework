@@ -6,29 +6,33 @@
  * @const string MF_VERSION Version of mini_blog
  * @const string MF_API_DIR Path to system files
  */
-define('MF_VERSION', '1.0.3');
+define('MF_VERSION', '1.2');
 define('MF_API_DIR', __DIR__ . '/');
 
 /**
  * Head start requirements
  */
-require MF_API_DIR . 'array.php';
-require MF_API_DIR . 'utils.php';
-require MF_API_DIR . 'loader.php';
-require MF_API_DIR . 'config.php';
+require api_path('array.php');
+require api_path('string.php');
+require api_path('loader.php');
+require api_path('storage.php');
 
 /**
  * Boot the app
+ * 
+ * @param string $config
  */
 function app_boot ($config) {
-	$config = config($config);
-	
-	system_load($config);
-	app_load($config);
-	
-	emit('router:pre_dispatch');
-	
-	dispatch(fetch_route(get_url(), $_SERVER['REQUEST_METHOD']));
+    $config = config($config);
+    
+    system_load($config);
+    app_load($config);
+    
+    emit('router:pre_dispatch');
+    
+    dispatch(fetch_route(get_url(), $_SERVER['REQUEST_METHOD']));
+    
+    emit('router:post_dispatch');
 }
 
 /**
@@ -37,18 +41,18 @@ function app_boot ($config) {
  * Useful for unit testing purposes
  */
 function system_load ($config) {
-	load_system();
-	
-	router('settings', $config('routing'));
-	router('settings.root', get_baseurl(MF_BASEPATH, $_SERVER['DOCUMENT_ROOT']));
-	
-	views('templates', $config('templates'));
-	lang('settings', $config('i18n'));
-	
-	db($config('database'));
-	
-	storage('validation', $config('validation'));
-	storage('config', $config);
+    load_system();
+    
+    router('settings', $config('routing'));
+    router('settings.root', get_baseurl(base_path(), $_SERVER['DOCUMENT_ROOT']));
+    
+    views('templates', $config('templates'));
+    lang('settings', $config('i18n'));
+    
+    db($config('database'));
+    
+    storage('validation', $config('validation'));
+    storage('config', $config);
 }
 
 /**
@@ -57,14 +61,14 @@ function system_load ($config) {
  * @param callable $config
  */
 function app_load ($config) {
-	if ($config('database.autoload')) {
-		db_connect();
-	}
-	
-	load_files($config('autoload.files'));
-	load_files($config('hooks'));
-	
-	app_load_models($config('autoload.models'));
+    if ($config('database.autoload')) {
+        db_connect();
+    }
+    
+    load_files($config('autoload.files'));
+    load_files($config('hooks'));
+    
+    app_load_models($config('autoload.models'));
 }
 
 /**
@@ -74,13 +78,13 @@ function app_load ($config) {
  * @return bool
  */
 function app_load_models ($models) {
-	if (empty($models)) {
-		return false;
-	}
-	
-	foreach ($models as $model) {
-		load_model($model);
-	}
+    if (empty($models)) {
+        return false;
+    }
+    
+    foreach ($models as $model) {
+        load_model($model);
+    }
 }
 
 /**
@@ -89,7 +93,7 @@ function app_load_models ($models) {
  * @param string $file
  * @return string
  */
-function base_path ($file) {
+function base_path ($file = '') {
     return MF_BASEPATH . $file;
 }
 
@@ -99,7 +103,7 @@ function base_path ($file) {
  * @param string $file
  * @return string
  */
-function app_path ($file) {
+function app_path ($file = '') {
     return MF_APP_DIR . $file;
 }
 
@@ -109,6 +113,6 @@ function app_path ($file) {
  * @param string $file
  * @return string
  */
-function api_path ($file) {
+function api_path ($file = '') {
     return MF_API_DIR . $file;
 }

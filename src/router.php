@@ -8,43 +8,13 @@
  * @return mixed
  */
 function router ($key = null, $value = null) {
-	static $repo = null;
-	$repo or $repo = repo(array('routes' => array()));
-	
-	return $repo($key, $value);
-}
-
-/**
- * Find route
- * 
- * @param string $url
- * @return array|bool
- */
-function router_find ($url, $method) {
-	$routes = router('routes');
-	
-	foreach ($routes as $route) {
-		$routeUrl = route_process($route['url']);
-		$pattern = "#^{$routeUrl}\$#i";
-		
-		if (
-			in_array($route['method'], array('*', $method)) &&
-			preg_match($pattern, $url, $matches)
-		) {
-			array_shift($matches);
-			
-			$matches = array_map(function ($v) {
-				return is_numeric($v) ? (int)$v : $v;
-			}, $matches);
-			
-			return array(
-				'route' => $route,
-				'matches' => $matches
-			);
-		}
-	}
-	
-	return false;
+    static $repo = null;
+    
+    $repo or $repo = repo(array(
+        'routes' => array()
+    ));
+    
+    return $repo($key, $value);
 }
 
 /**
@@ -54,50 +24,55 @@ function router_find ($url, $method) {
  * @param string $action
  */
 function route ($url, $action) {
-	$route = parse_route($url, $action);
-	
-	router("routes.{$route['id']}", $route);
+    $route = parse_route($url, $action);
+    
+    router("routes.{$route['id']}", $route);
 }
 
 /**
- * Create a full link to route 
+ * Find route
  * 
- * @param string $id
- * @param array $params
- * @param bool $absolute
+ * @param string $url
+ * @return array|bool
+ */
+function router_find ($url, $method) {
+    $routes = router('routes');
+    
+    foreach ($routes as $route) {
+        $routeUrl = route_process($route['url']);
+        $pattern = "#^{$routeUrl}\$#i";
+        
+        if (
+            in_array($route['method'], array('*', $method)) &&
+            preg_match($pattern, $url, $matches)
+        ) {
+            array_shift($matches);
+            
+            $matches = array_map(function ($v) {
+                return is_numeric($v) ? (int)$v : $v;
+            }, $matches);
+            
+            return compact('route', 'matches');
+        }
+    }
+    
+    return false;
+}
+
+/**
+ * Process a route
+ * 
+ * @param string $url
  * @return string
  */
-function url ($id, $params = array(), $absolute = false) {
-	$settings = router('settings');
-	
-	if ($absolute) {
-		$basepath = "{$settings['base_url']}{$settings['root']}/";
-	}
-	else {
-		$root = $settings['root'] !== '' ? "{$settings['root']}/" : '';
-		
-		$basepath = "/$root";
-	}
-	
-	if ($route = router("routes.$id")) {
-		$url = route_replace($route['url'], $params);
-		
-		return $basepath . $url;
-	}
-	
-	return false;
-}
-
-/**
- * Redirect to route
- * 
- * @see url
- */
-function redirect ($id, $params = array(), $absolute = false) {
-	$url = url($id, $params, $absolute);
-	
-	header("Location: $url");
-	exit;
+function route_process ($url) {
+    static $symbols = null;
+    $symbols or $symbols = router('settings.symbols');
+    
+    $find    = array_keys($symbols);
+    $replace = array_values($symbols);
+    
+    return str_replace($find, $replace, $url);
 }
 
 /**
@@ -108,35 +83,17 @@ function redirect ($id, $params = array(), $absolute = false) {
  * @return array
  */
 function parse_route ($url, $action) {
-	$name = 'index';
-	
-	list($method, $id, $url) = explode(' ', $url);
-	
-	if (strpos($action, ':') !== false) {
-		list($action, $name) = explode(':', $action);
-	}
-	
-	$url = trim($url, '/ ');
-	
-	return compact('method', 'id', 'url', 'action', 'name');
-}
-
-/**
- * Process a route
- * 
- * @param string $url
- * @return string
- */
-function route_process ($url) {
-	static $symbols = null;
-	$symbols or $symbols = router('settings.symbols');
-	
-	$find = array_keys($symbols);
-	$replace = array_values($symbols);
-	
-	$url = str_replace($find, $replace, $url);
-	
-	return $url;
+    $name = 'index';
+    
+    list($method, $id, $url) = explode(' ', $url);
+    
+    if (strpos($action, ':') !== false) {
+        list($action, $name) = explode(':', $action);
+    }
+    
+    $url = trim($url, '/ ');
+    
+    return compact('method', 'id', 'url', 'action', 'name');
 }
 
 /**
@@ -146,16 +103,16 @@ function route_process ($url) {
  * @param array $params
  */
 function route_replace ($url, $params) {
-	$regex = '/:(\w+)\??/';
-	
-	if (count($params) !== 0) {
-		$regex = array_fill(0, count($params), '/:(\w+)\??/');
-	}
-	else {
-		$params = '';
-	}
-	
-	return route_cleanup(trim(preg_replace($regex, $params, $url, 1), '/ '));
+    $regex = '/:(\w+)\??/';
+    
+    if (count($params) !== 0) {
+        $regex = array_fill(0, count($params), $regex);
+    }
+    else {
+        $params = '';
+    }
+    
+    return route_cleanup(trim(preg_replace($regex, $params, $url, 1), '/ '));
 }
 
 /**
@@ -165,7 +122,7 @@ function route_replace ($url, $params) {
  * @return string
  */
 function route_cleanup ($url) {
-	return chop(preg_replace('/:(\w+)\??/', '', $url), '/');
+    return chop(deduplicate($url, '/'), '/');
 };
 
 /**
@@ -176,13 +133,13 @@ function route_cleanup ($url) {
  * @return array
  */
 function fetch_route ($url, $method) {
-	if (!$found = router_find($url, $method)) {
-		return show_404();
-	}
-	
-	emit('router:found', $found['route']);
-	
-	return $found;
+    if (!$found = router_find($url, $method)) {
+        return show_404();
+    }
+    
+    emit('router:found', $found['route']);
+    
+    return $found;
 }
 
 /**
@@ -191,33 +148,24 @@ function fetch_route ($url, $method) {
  * @param array $found
  */
 function dispatch ($found) {
-	$route = $found['route'];
-	$action = "action_{$route['name']}";
-	
-	router('route', $found);
-	load_php($route['action']);
-	
-	if (
-		function_exists('actions_init') &&
-		function_exists($action)
-	) {
-		$result = actions_init();
-		
-		emit('action:init');
-		
-		$result = $result !== false
-			? call_user_func_array($action, $found['matches']) 
-			: false;
-		
-		if ($result === false) {
-			show_404();
-		}
-		
-		emit('router:post_dispatch');
-	}
-	else {
-		show_404();
-	}
+    if (!$found) {
+        return show_404();
+    }
+    
+    $route  = $found['route'];
+    $action = "action_{$route['name']}";
+    
+    router('route', $found);
+    load_php($route['action']);
+    
+    if (
+        function_exists('actions_init')                  === false ||
+        function_exists($action)                         === false ||
+        actions_init()                                   === false ||
+        call_user_func_array($action, $found['matches']) === false
+    ) {
+        return show_404();
+    }
 }
 
 /**
@@ -226,19 +174,19 @@ function dispatch ($found) {
  * @return string
  */
 function get_url () {
-	$root = router('settings.root');
-	
-	$url = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-	
-	if ($root !== '' && strpos($url, $root) !== false) {
-		$url = explode($root, $url);
-		$url = end($url);
-	}
-	
-	$url = trim($url, ' /');
-	$url = strpos($url, 'index.php') === 0 ? substr($url, 9) : $url;
-	
-	return $url;
+    $root = router('settings.root');
+    
+    $url = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+    
+    if ($root !== '' && strpos($url, $root) !== false) {
+        $url = explode($root, $url);
+        $url = end($url);
+    }
+    
+    $url = trim($url, ' /');
+    $url = strpos($url, 'index.php') === 0 ? substr($url, 9) : $url;
+    
+    return $url;
 }
 
 /**
@@ -260,13 +208,13 @@ function get_baseurl ($base, $root) {
  * Show page 404
  */
 function show_404 () {
-	if (router('supress')) {
-		return;
-	}
-	
-	emit('router:not_found');
-	
-	view('404') and exit;
+    if (router('supress')) {
+        return;
+    }
+    
+    emit('router:not_found');
+    
+    view('404') xor exit;
 }
 
 /**
@@ -277,5 +225,72 @@ function show_404 () {
 function show_error (Exception $exception) {
     $data = array('exception' => $exception);
     
-	view('error', $data) and exit;
+    view('error', $data) xor exit;
+}
+
+/**
+ * Create a full link to route 
+ * 
+ * @param string $id
+ * @param array $params
+ * @param bool $absolute
+ * @return string
+ */
+function url ($id, $params = array(), $absolute = false) {
+    $root = router('settings.root');
+    $base = router('settings.base_url');
+    
+    if ($absolute) {
+        $basepath = "{$base}{$root}/";
+    }
+    else {
+        $root = $root ? $root : '';
+        
+        $basepath = chop("/$root", '/');
+    }
+    
+    if ($route = router("routes.$id")) {
+        $url = route_replace($route['url'], $params);
+        
+        return "$basepath/$url";
+    }
+    
+    return false;
+}
+
+/**
+ * Get URL path from root to file
+ * 
+ * @param string $path
+ */
+function path ($path = '') {
+    $root = router('settings.root');
+    $root = $root ? $root : '';
+    
+    $basepath = chop("/$root", '/'); 
+    
+    return "$basepath/$path";
+}
+
+/**
+ * Redirect to route
+ * 
+ * @see url
+ */
+function redirect ($id, $params = array(), $absolute = false) {
+    $url = url($id, $params, $absolute);
+    
+    header("Location: $url") xor exit;
+}
+
+/**
+ * Redirect to URL relative to the website location
+ * 
+ * @see path
+ * @param string $path
+ */
+function redirect_url ($path) {
+    $url = path($path);
+    
+    header("Location: $path") xor exit;
 }

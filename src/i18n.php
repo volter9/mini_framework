@@ -1,18 +1,17 @@
 <?php
 
 /**
- * Language repo
+ * Language storage
  * 
  * @param mixed $key
  * @param mixed $value
  * @return mixed
  */
 function lang ($key = null, $value = null) {
-	static $repo = null;
-	
-	$repo or $repo = repo();
-	
-	return $repo($key, $value);
+    static $repo = null;
+    $repo or $repo = repo();
+    
+    return $repo($key, $value);
 }
 
 /**
@@ -24,11 +23,11 @@ function lang ($key = null, $value = null) {
 function load_language ($lang, $path) {
     $default = lang('settings.default');
     
-	lang($lang, load_php("$path/$default"));
-	
-	if (!lang('current')) {
+    lang($lang, load_php("$path/$default"));
+    
+    if (!lang('current')) {
         lang('current', $lang);
-	}
+    }
 }
 
 /**
@@ -38,7 +37,7 @@ function load_language ($lang, $path) {
  * @return string
  */
 function i18n ($string) {
-	$language = lang('current');
-	
-	return lang("$language.$string");
+    $language = lang('current');
+    
+    return lang("$language.$string");
 }

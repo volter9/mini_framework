@@ -107,6 +107,17 @@ body > article h6 {
 	margin-bottom: 12px;
 }
 
+body > article code {
+    border: 1px solid #08f;
+    border-radius: 4px;
+    color: #08f;
+    font-size: 75%;
+    vertical-align: middle;
+    
+    margin-right: 2px;
+    padding: 2px 4px;
+}
+
 #logo {
     font-size: 1.8em;
     font-weight: 300;

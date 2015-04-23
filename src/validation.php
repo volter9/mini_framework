@@ -3,7 +3,7 @@
 /**
  * Data validation
  * 
- * @package FFFramework
+ * @package mini_framework
  */
 
 /**
@@ -14,11 +14,10 @@
  * @return mixed
  */
 function validation ($key = null, $value = null) {
-	static $repo;
-	
-	$repo or $repo = repo();
-	
-	return $repo($key, $value);
+    static $repo;
+    $repo or $repo = repo();
+    
+    return $repo($key, $value);
 }
 
 /**
@@ -48,7 +47,7 @@ function validation_init (array $fields, array $messages, array $validators = ar
  * @param array $validators
  */
 function validators (array $validators) {
-	validation('validators', $validators);
+    validation('validators', $validators);
 }
 
 /**
@@ -57,7 +56,7 @@ function validators (array $validators) {
  * @param array $messages
  */
 function validators_messages (array $messages) {
-	validation('messages', $messages);
+    validation('messages', $messages);
 }
 
 /**
@@ -66,7 +65,7 @@ function validators_messages (array $messages) {
  * @param array $fields
  */
 function validation_fields (array $fields) {
-	validation('fields', $fields);
+    validation('fields', $fields);
 }
 
 /**
@@ -77,13 +76,13 @@ function validation_fields (array $fields) {
  * @param string|Closure $message
  */
 function add_validator ($name, Closure $validator, $message) {
-	validators(array(
-		$name => $validator
-	));
-	
-	validators_messages(array(
-		$name => $message
-	));
+    validators(array(
+        $name => $validator
+    ));
+    
+    validators_messages(array(
+        $name => $message
+    ));
 }
 
 /**
@@ -94,26 +93,26 @@ function add_validator ($name, Closure $validator, $message) {
  * @return bool
  */
 function validate (array $data, array $rules) {
-	if (!$rules) {
-		throw new Exception(
-			'Validation rules were not initialized!'
-		);
-	}
-	
-	$errors = array();
-	
-	foreach ($rules as $field => $set) {
-		$value = isset($data[$field]) ? $data[$field] : null;
-		$error = validate_field($field, $value, $set, $data);
-		
-		if (is_string($error)) {
-			$errors[$field] = $error;
-		}
-	}
-	
-	validation('errors', $errors);
-	
-	return empty($errors);
+    if (!$rules) {
+        throw new Exception(
+            'Validation rules were not initialized!'
+        );
+    }
+    
+    $errors = array();
+    
+    foreach ($rules as $field => $set) {
+        $value = isset($data[$field]) ? $data[$field] : null;
+        $error = validate_field($field, $value, $set, $data);
+        
+        if (is_string($error)) {
+            $errors[$field] = $error;
+        }
+    }
+    
+    validation('errors', $errors);
+    
+    return empty($errors);
 }
 
 /**
@@ -125,42 +124,42 @@ function validate (array $data, array $rules) {
  * @return bool|array
  */
 function validate_field ($field, $value, $rules, array $data) {
-	$errors = null;
-	
-	foreach (parse_rules($rules) as $rule) {
-		$name      = $rule['validator'];
-		$params    = $rule['params'];
-		$validator = validation("validators.$name");
-		
-		if (!$validator) {
-		    throw new Exception(
-		        "Validator '$name' doesn't exists!"
-		    );
-		}
-		
-		$result = call_user_func_array($validator, array_merge(array($value, $data), $params));
-		
-		if (!(bool)$result) {
-			$message = validation("messages.$name");
-			
-			if (is_string($message)) {
-				array_unshift($params, $message, validation("fields.$field"));
-				
-				$message = call_user_func_array('sprintf', $params);
-			}
-			else {
-				array_unshift($params, validation("fields.$field"));
-				
-				$message = call_user_func_array($message, $params);
-			}
-			
-			$errors = $message;
-			
-			break;
-		}
-	}
-	
-	return $errors;
+    $errors = null;
+    
+    foreach (parse_rules($rules) as $rule) {
+        $name      = $rule['validator'];
+        $params    = $rule['params'];
+        $validator = validation("validators.$name");
+        
+        if (!$validator) {
+            throw new Exception(
+                "Validator '$name' doesn't exists!"
+            );
+        }
+        
+        $result = call_user_func_array($validator, array_merge(array($value, $data), $params));
+        
+        if (!(bool)$result) {
+            $message = validation("messages.$name");
+            
+            if (is_string($message)) {
+                array_unshift($params, $message, validation("fields.$field"));
+                
+                $message = call_user_func_array('sprintf', $params);
+            }
+            else {
+                array_unshift($params, validation("fields.$field"));
+                
+                $message = call_user_func_array($message, $params);
+            }
+            
+            $errors = $message;
+            
+            break;
+        }
+    }
+    
+    return $errors;
 }
 
 /**
@@ -170,23 +169,23 @@ function validate_field ($field, $value, $rules, array $data) {
  * @return array
  */
 function parse_rules ($rules) {
-	$rules = explode('|', $rules);
-	$result = array();
-	
-	foreach ($rules as $validator) {
-		$params = array();
-		
-		if (strpos($validator, ':') !== false) {
-			list($validator, $params) = parse_rule($validator);
-		}
-		
-		$result[] = array(
-			'validator' => $validator,
-			'params'    => $params
-		);
-	}
-	
-	return $result;
+    $rules = explode('|', $rules);
+    $result = array();
+    
+    foreach ($rules as $validator) {
+        $params = array();
+        
+        if (strpos($validator, ':') !== false) {
+            list($validator, $params) = parse_rule($validator);
+        }
+        
+        $result[] = array(
+            'validator' => $validator,
+            'params'    => $params
+        );
+    }
+    
+    return $result;
 }
 
 /**
@@ -196,16 +195,16 @@ function parse_rules ($rules) {
  * @return array
  */
 function parse_rule ($rule) {
-	list($validator, $params) = explode(':', $rule);
-	
-	$params = array_map(
+    list($validator, $params) = explode(':', $rule);
+    
+    $params = array_map(
         function ($v) {
             return is_numeric($v) ? (int)$v : $v;
         }, 
         explode(',', $params)
     );
-	
-	return array($validator, $params);
+    
+    return array($validator, $params);
 }
 
 /**
@@ -216,9 +215,9 @@ function parse_rule ($rule) {
  * @return array|string
  */
 function validation_errors ($string = false) {
-	if (!$errors = validation('errors')) {
-		return false;
-	}
-	
-	return $string ? implode(' ', $errors) : $errors;
+    if (!$errors = validation('errors')) {
+        return false;
+    }
+    
+    return $string ? implode(' ', $errors) : $errors;
 }

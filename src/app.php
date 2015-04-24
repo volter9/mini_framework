@@ -21,8 +21,9 @@ require api_path('storage.php');
  * Boot the app
  * 
  * @param string $config
+ * @param bool $auto_dispatch
  */
-function app_boot ($config) {
+function app_boot ($config, $auto_dispatch = false) {
     $config = config($config);
     
     system_load($config);
@@ -30,7 +31,12 @@ function app_boot ($config) {
     
     emit('router:pre_dispatch');
     
-    dispatch(fetch_route(get_url(), $_SERVER['REQUEST_METHOD']));
+    if ($auto_dispatch) {
+        auto_dispatch(get_url());
+    }
+    else {
+        dispatch(fetch_route(get_url(), $_SERVER['REQUEST_METHOD']));
+    }
     
     emit('router:post_dispatch');
 }

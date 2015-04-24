@@ -147,7 +147,7 @@ function fetch_route ($url, $method) {
  * 
  * @param array $found
  */
-function dispatch ($found) {
+function dispatch (array $found) {
     if (!$found) {
         return show_404();
     }
@@ -158,13 +158,48 @@ function dispatch ($found) {
     router('route', $found);
     load_php($route['action']);
     
+    invoke_action($action, $found['matches']);
+}
+
+/**
+ * Auto dispatch
+ * 
+ * @param string $url
+ */
+function auto_dispatch ($url) {
+    $fragments = explode('/', $url);
+    
+    $controller = array_shift($fragments);
+    $controller = $controller ? $controller : 'index';
+    
+    $action = array_shift($fragments);
+    $action = $action ? $action : 'index';
+    $action = "action_{$action}";
+    
+    try {
+        load_app_file("actions/$controller");
+    }
+    catch (Exception $e) {
+        return not_found();
+    }
+    
+    invoke_action($action, $fragments);
+}
+
+/**
+ * Invoke the route
+ * 
+ * @param string $action
+ * @param array $parameters
+ */
+function invoke_action ($action, array $parameters) {
     if (
-        function_exists('actions_init')                  === false ||
-        function_exists($action)                         === false ||
-        actions_init()                                   === false ||
-        call_user_func_array($action, $found['matches']) === false
+        function_exists('actions_init')            === false ||
+        function_exists($action)                   === false ||
+        actions_init()                             === false ||
+        call_user_func_array($action, $parameters) === false
     ) {
-        return show_404();
+        return not_found();
     }
 }
 
@@ -207,7 +242,7 @@ function get_baseurl ($base, $root) {
 /**
  * Show page 404
  */
-function show_404 () {
+function not_found () {
     if (router('supress')) {
         return;
     }

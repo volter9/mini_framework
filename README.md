@@ -13,7 +13,7 @@
 ```json
 {
     "require": {
-        "volter/mini_framework": "1.1"
+        "volter/mini_framework": "1.2"
     }
 }
 ```

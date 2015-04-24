@@ -20,7 +20,7 @@
                     <?php foreach ($exception->getTrace() as $trace): ?>
                         <?php if (isset($trace['file'], $trace['line'])): ?>
                         <li>
-                            В файле <code>/<?php echo exclude(MF_BASEPATH, $trace['file']) ?></code> 
+                            В файле <code><?php echo $trace['file'] ?></code> 
                             на линии <?php echo $trace['line'] ?>
                         </li>
                         <?php endif; ?>

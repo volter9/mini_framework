@@ -9,6 +9,10 @@
  * @return mixed
  */
 function array_get ($array, $key, $default = false) {
+    if (isset($array[$key])) {
+        return $array[$key];
+    }
+    
     $keys = explode('.', $key);
     $key = array_shift($keys);
     
@@ -18,11 +22,7 @@ function array_get ($array, $key, $default = false) {
         $key = array_shift($keys);
     }
     
-    if ($key !== null && !isset($array[$key])) {
-        return $default;
-    }
-    
-    return $array;
+    return $key !== null && !isset($array[$key]) ? $default : $array;
 }
 
 /**
@@ -38,19 +38,22 @@ function array_set (&$array, $key, $value) {
     
     $temp = $array;
     $curs = &$temp;
-    $key = array_shift($keys);
+    $key  = array_shift($keys);
     
     while (is_array($curs) && $key !== null) {
         $curs = &$curs[$key];
         
         $key = array_shift($keys);
         
-        if ( !isset($curs[$key]) ) {
+        if (!isset($curs[$key]) && $key) {
             $curs[$key] = array();
         }
     }
     
-    $curs = $value;
+    $curs = is_array($curs) && is_array($value) 
+        ? array_merge($curs, $value) 
+        : $value;
+    
     $array = $temp;
 }
 

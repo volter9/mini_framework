@@ -13,7 +13,7 @@
  * @param bool $readonly
  * @return callable
  */
-function repo ($default = array(), $readonly = false) {
+function repo (array $default = array(), $readonly = false) {
     $repo = $default;
     
     /**
@@ -24,41 +24,20 @@ function repo ($default = array(), $readonly = false) {
      * @return mixed
      */
     return function ($key = null, $value = null) use ($readonly, &$repo) {
-        // Setters
         if (!$readonly && $key !== null && $value !== null) {
-            if (strpos($key, '.') !== false) {
-                return array_set($repo, $key, $value);
-            }
-            else {
-                if (
-                    is_array($value) && 
-                    isset($repo[$key]) && 
-                    is_array($repo[$key])
-                ) {
-                    $repo[$key] = array_merge($repo[$key], $value);
-                }
-                else {
-                    $repo[$key] = $value;
-                }
-            }
+            array_set($repo, $key, $value);
             
             return;
         }
-        else if (is_array($key)) {
+        
+        if (!$readonly && is_array($key)) {
             $repo = array_merge($repo, $key);
             
             return;
         }
         
-        // Getters
-        if (strpos($key, '.') !== false) {
+        if ($key) {
             return array_get($repo, $key);
-        }
-        else if ( isset($repo[$key]) ) {
-            return $repo[$key];
-        }
-        else if ($key) {
-            return false;
         }
         
         return $repo;
@@ -90,7 +69,7 @@ function stack () {
             return;
         }
         
-        if ( isset($repo[$key]) ) {
+        if (isset($repo[$key])) {
             return $repo[$key];
         }
         else {

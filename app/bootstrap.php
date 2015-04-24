@@ -22,6 +22,10 @@ set_exception_handler(function ($e) {
     !defined('MF_DEBUG') or show_error($e);
 });
 
+set_error_handler(function ($type, $message) {
+    throw new Exception($message);
+});
+
 /**
  * Debug information for 404 page
  * 

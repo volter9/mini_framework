@@ -134,7 +134,7 @@ function route_cleanup ($url) {
  */
 function fetch_route ($url, $method) {
     if (!$found = router_find($url, $method)) {
-        return show_404();
+        return not_found();
     }
     
     emit('router:found', $found['found']);
@@ -149,7 +149,7 @@ function fetch_route ($url, $method) {
  */
 function dispatch (array $found) {
     if (!$found) {
-        return show_404();
+        return not_found();
     }
     
     $route  = $found['found'];

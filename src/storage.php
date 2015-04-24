@@ -11,7 +11,7 @@
  * 
  * @param array $default
  * @param bool $readonly
- * @return callable
+ * @return \Closure
  */
 function repo (array $default = array(), $readonly = false) {
     $repo = $default;
@@ -47,7 +47,7 @@ function repo (array $default = array(), $readonly = false) {
 /**
  * Stack storage
  * 
- * @return callable
+ * @return \Closure
  */
 function stack () {
     $repo = array();
@@ -62,30 +62,61 @@ function stack () {
     return function ($key = null, $value = null) use (&$repo) {
         if ($key && $value) {
             $repo[$key][] = $value;
+            
             return;
         }
         else if ($key && $value === false) {
             unset($repo[$key]);
+            
             return;
         }
         
         if (isset($repo[$key])) {
             return $repo[$key];
         }
-        else {
-            return false;
+        
+        return false;
+    };
+}
+
+/**
+ * Simple key-value storage
+ * 
+ * @param array $default
+ */
+function box (array $default = array()) {
+    $repo = $default;
+    
+    /**
+     * Repository callback
+     * 
+     * @param string $key
+     * @param mixed $value
+     * @return mixed
+     */
+    return function ($key, $value = null) use (&$repo) {
+        if ($key !== null && $value !== null) {
+            $repo[$key] = $value;
+            
+            return;
         }
+        
+        if (isset($repo[$key])) {
+            return $repo[$key];
+        }
+        
+        return false;
     };
 }
 
 /**
  * Creates a PHP config
  * 
- * @param string $config
+ * @param string $file
  * @return callable
  */
-function config ($config) { 
-    return repo(load_php($config, true), true);
+function config ($file) { 
+    return repo(load_php($file, true), true);
 }
 
 /**

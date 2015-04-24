@@ -65,8 +65,8 @@ return array(
      * - files - autoload any PHP files
      */
     'autoload' => array(
-        'models' => array(),
-        'files'  => array()
+        'models'  => array(),
+        'files'   => array()
     ),
     
     /**

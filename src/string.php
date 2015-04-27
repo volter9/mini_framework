@@ -23,7 +23,18 @@ function ends_with ($haystack, $needle) {
 }
 
 /**
- * Get last occurence after needle
+ * Check if string `$haystack` has string `$needle`
+ * 
+ * @param string $haystack
+ * @param string $needle
+ * @return bool
+ */
+function contains ($haystack, $needle) {
+    return strpos($haystack, $needle) !== false;
+}
+
+/**
+ * Get everyting after last found needle
  * 
  * @param string $haystack
  * @param string $needle
@@ -32,6 +43,18 @@ function ends_with ($haystack, $needle) {
  */
 function after ($haystack, $needle, $with_needle = false) {
     return substr($haystack, strrpos($haystack, $needle) + strlen($needle) * !$with_needle);
+}
+
+/**
+ * Get everyting before first found needle
+ * 
+ * @param string $haystack
+ * @param string $needle
+ * @param bool $with_needle
+ * @return string
+ */
+function before ($haystack, $needle, $with_needle = false) {
+    return substr($haystack, 0, strpos($haystack, $needle) + strlen($needle) * $with_needle);
 }
 
 /**

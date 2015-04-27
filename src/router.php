@@ -44,7 +44,10 @@ function router_find ($url, $method) {
         
         if (
             in_array($found['method'], array('*', $method)) &&
-            preg_match($pattern, $url, $matches)
+            (
+                $url === $found['url'] ||
+                preg_match($pattern, $url, $matches)
+            )
         ) {
             array_shift($matches);
             

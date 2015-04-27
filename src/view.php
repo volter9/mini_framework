@@ -64,34 +64,42 @@ function render ($__view__, array $__data__) {
 }
 
 /**
+ * Get template name from 
+ * 
+ * @param string $template
+ * @return array
+ */
+function parse_template ($template) {
+    $contains = contains($template, ':');
+    
+    return array( 
+        $contains ? before($template, ':') : views('templates.template'),
+        $contains ? after($template, ':')  : $template
+    );
+}
+
+/**
  * Transforms a template name to full template path
  * 
  * @param string $template
  * @return string
  */
-function view_path ($template) {
-    static $views = null;
+function view_path ($view) {
+    $directory = chop(views('templates.directory'), '/');
     
-    if ($views === null) {
-        $views = views('templates');
-    }
+    list($template, $view) = parse_template($view);
     
-    $skin = $views['template'];
-    
-    if (strpos($template, ':') !== false) {
-        list($skin, $template) = explode(':', $template);
-    }
-    
-    return "{$views['directory']}{$skin}/html/$template.php";
+    return "$directory/$template/html/$view.php";
 }
 
 /**
  * URL to template file
  * 
  * @param string $file
+ * @return string
  */
 function asset_url ($file = '') {
-    $template = views('templates.template');
+    list($template, $file) = parse_template($file);
     
     $folder = chop(views('templates.directory'), '/');
     $folder = after($folder, '/');
@@ -99,4 +107,17 @@ function asset_url ($file = '') {
     $root = router('settings.root');
     
     return deduplicate("/$root/$folder/$template/$file", '/');
+}
+
+/**
+ * Path to template file
+ * 
+ * @param string $file
+ * @return string
+ */
+function asset_path ($file = '') {
+    list($template, $file) = parse_template($file);
+    $directory = views('templates.directory');
+    
+    return "$directory/$template/$file";
 }

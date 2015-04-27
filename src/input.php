@@ -15,7 +15,7 @@ function session ($key = null, $value = null) {
         unset($_SESSION[$key]);
     }
     
-    if ( $key && !$value && isset($_SESSION[$key]) ) {
+    if ($key && !$value && isset($_SESSION[$key])) {
         return $_SESSION[$key];
     }
     
@@ -29,7 +29,6 @@ function session ($key = null, $value = null) {
  */
 function input ($key = null, $sanitize = false) {
     $array = get_array();
-    
     $value = false;
     
     if ($key && isset($array[$key])) {
@@ -39,11 +38,7 @@ function input ($key = null, $sanitize = false) {
         $value = $array;
     }
     
-    if ($value && $sanitize) {
-        $value = sanitize($value);
-    }
-    
-    return $value;
+    return $sanitize ? sanitize($value) : $value;
 }
 
 /**
@@ -80,6 +75,15 @@ function is_post () {
 }
 
 /**
+ * Is request is AJAX request
+ * 
+ * @return bool
+ */
+function is_ajax () {
+    return strtolower(array_get($_SERVER, 'HTTP_X_REQUEST_WITH')) === 'xmlhttprequest';
+}
+
+/**
  * Sanitize input (recursive)
  * 
  * @param mixed $input
@@ -87,13 +91,11 @@ function is_post () {
  */
 function sanitize ($input) {
     if (is_array($input)) {
-        foreach ($input as $key => $value) {
-            $input[$key] = sanitize($value);
-        }
+        return array_map(function ($v) {
+            return sanitize($v);
+        }, $input);
     }
     else {
-        $input = filter_var($input, FILTER_SANITIZE_STRING);
+        return filter_var($input, FILTER_SANITIZE_STRING);
     }
-    
-    return $input;
 }

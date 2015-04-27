@@ -49,6 +49,8 @@ function router_find ($url, $method) {
                 preg_match($pattern, $url, $matches)
             )
         ) {
+            $matches = $matches ? $matches : array();
+            
             array_shift($matches);
             
             $matches = array_map(function ($v) {

@@ -74,7 +74,7 @@ function parse_template ($template) {
     
     return array( 
         $contains ? before($template, ':') : views('templates.template'),
-        $contains ? after($template, ':')  : $template
+        $contains ? after($template, ':') : $template
     );
 }
 

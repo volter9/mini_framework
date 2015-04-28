@@ -100,15 +100,15 @@ h6 {
  * Menu
  */
 
-nav.fluid {
+nav {
     padding: 16px;
 }
 
-nav.fluid ul {
+nav ul {
     font-size: 0px;
 }
 
-nav.fluid ul li {
+nav ul li {
     font-size: 14px;
     text-transform: lowercase;
     
@@ -225,6 +225,10 @@ section.centered pre code {
     line-height: 0.8em;
 }
 
+.features .right p {
+    margin-bottom: 1em;
+}
+
 /**
  * Footer
  */
@@ -250,7 +254,7 @@ footer p {
 }
 
 footer .clearfix > * {
-    width: 33%;
+    width: 33.33%;
 }
 
 footer .clearfix .right {

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Главная страница - mini_framework</title>
+        <link href="./css/styles.css" rel="stylesheet" type="text/css"/>
+        <link href="./js/styles/github.css" rel="stylesheet" type="text/css"/>
+
+        <script src="./js/hljs.js"></script>
+        <script>hljs.initHighlightingOnLoad();</script>
+    </head>
+    
+    <body>
+        <nav class="fluid clearfix">
+            <div class="left">
+                <a href="./">mini_framework</a>
+            </div>
+            
+            <div class="right">
+                <ul>
+                    <li>
+                        <a href="#">Фичи</a>
+                    </li> 
+                    
+                    <li>
+                        <a href="#">Документация</a>
+                    </li> 
+                    
+                    <li>
+                        <a href="#">Блог</a>
+                    </li> 
+                </ul>
+            </div>
+        </nav>
+        
+        <div class="wrapper">
+            <section class="fluid centered">
+                <h1>Я бы сделал так...</h1>
+            
+                <p>Web-морду напишем на РНР. В этом проекте самое место для Declarative Transaction Management. Возьмем какой нибудь графический тулкит. Вынесем в отдельный слой DataMapper, Identity Map и все связанные объекты.</p>
+            
+                <pre><code class="language-php">&lt;?php
+
+/**
+ * Данная функция вызывается до
+ * при до вызова опредленного действия
+ * в этом же контроле
+ */
+function actions_init () {
+    
+}
+
+/**
+ * Главное действие
+ */
+function action_index () {
+    layout('index');
+}</code></pre>
+            </section>
+        </div>
+        
+        <div class="wrapper">
+            <section class="fluid">
+                <h2>Фичи</h1>
+                
+                <p>
+                    Обязательно нужно написать модульные, функциональные и приемочные тесты. 
+                    Ну и админу надо десктоп приличный. 
+                    Это как синхронный цикл в Meteor. 
+                    Главное не забыть о бекапах.
+                </p>
+                
+                <ul class="features">
+                    <li class="clearfix">
+                        <div class="left">
+                            <img alt="code" title="code" src="./img/code-cropped.png"/>
+                        </div>
+                        <div class="right">
+                            <h3>По-моему архитектура этого проекта очевидна.</h3>
+                        
+                            <p>
+                                Когда проект разрастется запилим свой QueryBuilder. 
+                                Для начала перезагрузим консоль. 
+                                Это как синхронный цикл в Meteor. 
+                                Необходимо будет автоматически скейлить облачные серверы. 
+                                А вообще все это можно сделать на одних callback'ах.
+                            </p>
+                        </div>
+                    </li>
+                
+                    <li class="clearfix">
+                        <div class="left">
+                            <img alt="files" title="files" src="./img/files-cropped.png"/>
+                        </div>
+                        <div class="right">
+                            <h3>Я бы делал так.</h3>
+                        
+                            <p>
+                                Вынесем в отдельный слой DataMapper, Identity Map и все связанные объекты. 
+                                Возьмем какой нибудь графический тулкит. 
+                                Когда проект разрастется запилим свой QueryBuilder. 
+                                Все запросы будут отправляться с помощью JS. 
+                                Ну а если сильно не заморачиваться то это все можно на процедурке написать.
+                            </p>
+                        </div>
+                    </li>
+                
+                    <li class="clearfix">
+                        <div class="left"></div>
+                        <div class="right">
+                            <h3>Все очень просто.</h3>
+                        
+                            <p>
+                                Если для конкретной платформы – С++. 
+                                Обязательно нужно написать модульные, функциональные и приемочные тесты. 
+                                Проработаем наилучшую архитектуру для back-end коннектора к различным API. 
+                                Повесим observer на каждый инстанс. 
+                                В общем в энтерпрайзе делают так.
+                            </p>
+                        </div>
+                    </li>
+                </ul>
+            </section>
+        </div>
+        
+        <div class="wrapper">
+            <section class="fluid centered">
+                <h1>Документация</h1>
+            
+                <p>
+                    Нужно обязательно продумать структуру приложения. 
+                    Перепишем foreach'и на while. 
+                    Для начала перезагрузим консоль. 
+                    И что бы ни одного onclick'a в HTML!
+                </p>
+            
+                <div class="group">
+                    <a class="button" href="#">
+                        Начать сейчас
+                    </a>
+                
+                    <a class="button" href="#">
+                        Посмотреть код на GitHub
+                    </a>
+                </div>
+            </section>
+        </div>
+        
+        <footer class="fluid">
+            <section>
+                <h4>mini_framework</h4>
+                
+                <p>
+                    Все права защищены © 2015<br/>
+                    Лицензия исходного кода MIT
+                </p>
+            </section>
+        </footer>
+    </body>
+</html>

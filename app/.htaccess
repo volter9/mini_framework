@@ -1,3 +1,0 @@
-# Deny all PHP template files in following directory
-Order Allow,Deny
-Deny from all

@@ -1,0 +1,239 @@
+/**
+ * mini_framework style sheet
+ * 
+ * @author volter9
+ * @package mini_framework
+ */
+
+/**
+ * Global styles
+ */
+
+* {
+    box-sizing: border-box;
+}
+
+html, 
+body {
+    font-family: Open Sans;
+    font-size: 14px;
+}
+
+html, 
+body,
+ul,
+ol {
+    margin: 0px;
+    padding: 0px;
+}
+
+a {
+    color: #000;
+    text-decoration: none;
+}
+
+a:hover {
+    /* Agent 007 */
+    color: #007;
+}
+
+ul,
+ol {
+    list-style: none;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-weight: normal;
+}
+
+/**
+ * Common and unique styles
+ */
+
+.fluid {
+    margin: 0px auto;
+    width: 900px;
+}
+
+.clearfix:after {
+    content: "";
+    font-size: 0px;
+    visibility: none;
+    
+    clear: both;
+    display: block;
+    height: 0px;
+    width: 100%;
+}
+
+.clearfix .left {
+    float: left;
+}
+
+.clearfix .right {
+    float: right;
+}
+
+.button {
+    border: 1px solid #7ea4ff;
+    border-radius: 4px;
+    color: #118bf8;
+    
+    padding: 8px 28px;
+}
+
+.button:hover {
+    color: #118bf8;
+}
+
+/**
+ * Menu
+ */
+
+nav.fluid {
+    padding: 16px;
+}
+
+nav.fluid ul {
+    font-size: 0px;
+}
+
+nav.fluid ul li {
+    font-size: 14px;
+    text-transform: lowercase;
+    
+    display: inline-block;
+    margin-left: 32px;
+}
+
+/**
+ * Styles
+ */
+
+.wrapper {
+    border-bottom: 1px solid #ececec;
+    
+    padding: 60px 0px;
+}
+
+.wrapper > section {
+    padding: 0px 48px;
+}
+
+.wrapper > section h1,
+.wrapper > section h2,
+.wrapper > section h3 { 
+    margin: 0px;
+    margin-bottom: 16px; 
+}
+
+.wrapper > section h1 { font-size: 32px }
+.wrapper > section h2 { font-size: 28px }
+.wrapper > section h3 { font-size: 24px }
+
+.wrapper > section p {
+    line-height: 160%;
+    
+    margin: 0px;
+}
+
+.wrapper > section .group {
+    font-size: 0px;
+    text-align: center;
+    
+    margin-top: 32px;
+}
+
+.wrapper > section .group .button {
+    font-size: 14px;
+    
+    margin-right: 10px;
+    display: inline-block;
+}
+
+/**
+ * Centered content
+ */
+section.centered {
+    padding: 0px 96px;
+}
+
+section.centered h1,
+section.centered p {
+    text-align: center;
+}
+
+section.centered pre code {
+    background-color: #f6f6f6;
+    font-family: Menlo, Monaco, Consolas, monospace;
+    line-height: 140%;
+    
+    margin-top: 32px;
+    padding: 16px;
+}
+
+/**
+ * Features
+ */
+
+.features {
+    margin-top: 32px;
+}
+
+.features li {
+    margin-bottom: 20px;
+}
+
+.features li:last-child {
+    margin-bottom: 0px;
+}
+
+.features .left {
+    background-color: #ececec;
+    
+    height: 200px;
+    width: 200px;
+}
+
+.features .left img {
+    width: 100%;
+    height: 100%;
+}
+
+.features .right {
+    width: calc(100% - 220px);
+}
+
+/**
+ * Footer
+ */
+
+footer {
+    padding: 32px 16px;
+    padding-bottom: 96px;
+}
+
+footer section {
+    width: 25%;
+}
+
+footer h4 {
+    border-bottom: 1px solid #e6e6e6;
+    font-size: 18px;
+    
+    margin: 0px;
+    margin-bottom: 0.6em;
+    padding-bottom: 0.5em;
+}
+
+footer p {
+    font-size: 12px;
+    line-height: 160%;
+    
+    margin: 0px;
+}

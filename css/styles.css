@@ -90,8 +90,7 @@ h6 {
 
 .button:hover {
     background-color: #118bf8;
-    border: 1px solid #fff;
-    box-shadow: 0px 0px 0px 1px #118bf8;
+    border: 1px solid #118bf8;
     color: #fff;
     text-decoration: none;
 }

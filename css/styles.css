@@ -35,6 +35,7 @@ a {
 a:hover {
     /* Agent 007 */
     color: #007;
+    text-decoration: underline;
 }
 
 ul,
@@ -89,6 +90,7 @@ h6 {
 
 .button:hover {
     color: #118bf8;
+    text-decoration: none;
 }
 
 /**

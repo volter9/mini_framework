@@ -170,11 +170,16 @@ section.centered p {
     text-align: center;
 }
 
+section.centered pre {
+    display: block;
+}
+
 section.centered pre code {
     background-color: #f6f6f6;
     font-family: Menlo, Monaco, Consolas, monospace;
     line-height: 140%;
     
+    display: block;
     margin-top: 32px;
     padding: 16px;
 }

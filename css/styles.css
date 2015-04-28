@@ -1,6 +1,8 @@
 /**
  * mini_framework style sheet
  * 
+ * Special thanks to BaNru for some help on styles
+ * 
  * @author volter9
  * @package mini_framework
  */
@@ -15,7 +17,7 @@
 
 html, 
 body {
-    font-family: Open Sans;
+    font-family: Open Sans, sans-serif;
     font-size: 14px;
 }
 
@@ -28,13 +30,11 @@ ol {
 }
 
 a {
-    color: #000;
+    color: #2b8bec;
     text-decoration: none;
 }
 
 a:hover {
-    /* Agent 007 */
-    color: #007;
     text-decoration: underline;
 }
 
@@ -89,7 +89,10 @@ h6 {
 }
 
 .button:hover {
-    color: #118bf8;
+    background-color: #118bf8;
+    border: 1px solid #fff;
+    box-shadow: 0px 0px 0px 1px #118bf8;
+    color: #fff;
     text-decoration: none;
 }
 
@@ -202,6 +205,8 @@ section.centered pre code {
 
 .features .left {
     background-color: #ececec;
+    border-radius: 10px;
+    overflow: hidden;
     
     height: 200px;
     width: 200px;
@@ -213,6 +218,7 @@ section.centered pre code {
 }
 
 .features .right {
+    padding-top: 8px;
     width: calc(100% - 220px);
 }
 
@@ -225,17 +231,11 @@ footer {
     padding-bottom: 96px;
 }
 
-footer section {
-    width: 25%;
-}
-
 footer h4 {
-    border-bottom: 1px solid #e6e6e6;
     font-size: 18px;
+    text-align: center;
     
     margin: 0px;
-    margin-bottom: 0.6em;
-    padding-bottom: 0.5em;
 }
 
 footer p {
@@ -243,4 +243,13 @@ footer p {
     line-height: 160%;
     
     margin: 0px;
+    padding-top: 4px;
+}
+
+footer .clearfix > * {
+    width: 33%;
+}
+
+footer .clearfix .right {
+    text-align: right;
 }

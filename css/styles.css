@@ -218,8 +218,11 @@ section.centered pre code {
 }
 
 .features .right {
-    padding-top: 8px;
     width: calc(100% - 220px);
+}
+
+.features .right h3 {
+    line-height: 0.8em;
 }
 
 /**

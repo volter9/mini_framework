@@ -49,7 +49,7 @@ function router_find ($url, $method) {
                 preg_match($pattern, $url, $matches)
             )
         ) {
-            $matches = $matches ? $matches : array();
+            $matches = isset($matches) ? $matches : array();
             
             array_shift($matches);
             

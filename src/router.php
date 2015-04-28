@@ -44,12 +44,9 @@ function router_find ($url, $method) {
         
         if (
             in_array($found['method'], array('*', $method)) &&
-            (
-                $url === $found['url'] ||
-                preg_match($pattern, $url, $matches)
-            )
+            preg_match($pattern, $url, $matches)
         ) {
-            $matches = isset($matches) ? array_numerify($matches) : array();
+            $matches = array_numerify($matches);
             
             array_shift($matches);
             
@@ -88,13 +85,19 @@ function parse_route ($url, $action) {
     
     list($method, $id, $url) = explode(' ', $url);
     
-    if (strpos($action, ':') !== false) {
-        list($action, $name) = explode(':', $action);
+    if (is_string($action)) {
+        $file = $action;
+        
+        if (strpos($action, ':') !== false) {
+            list($file, $name) = explode(':', $action);
+        }
+        
+        $action = compact('file', 'name');
     }
     
     $url = trim($url, '/ ');
     
-    return compact('method', 'id', 'url', 'action', 'name');
+    return compact('method', 'id', 'url', 'action');
 }
 
 /**
@@ -153,13 +156,15 @@ function dispatch (array $found) {
         return not_found();
     }
     
-    $route  = $found['found'];
-    $action = "action_{$route['name']}";
+    $route = $found['found'];
     
     router('route', $found);
-    load_php($route['action']);
     
-    invoke_action($action, $found['matches']);
+    if (!is_callable($route['action'])) {
+        load_php($route['action']['file']);
+    }
+    
+    invoke_action($route, $found['matches']);
 }
 
 /**
@@ -190,16 +195,23 @@ function auto_dispatch ($url) {
 /**
  * Invoke the route
  * 
- * @param string $action
+ * @param array $action
  * @param array $parameters
  */
-function invoke_action ($action, array $parameters) {
-    if (
-        function_exists('actions_init')            === false ||
-        function_exists($action)                   === false ||
-        actions_init()                             === false ||
-        call_user_func_array($action, $parameters) === false
-    ) {
+function invoke_action (array $route, array $parameters) {
+    $action = $route['action'];
+    $action = is_callable($action) ? $action : "action_{$action['name']}";
+    
+    if (!is_callable($action)) {
+        $functions = function_exists('actions_init') && function_exists($action);
+        $not_found = actions_init() === false;
+        
+        if (!$functions || $not_found) {
+            return not_found();
+        }
+    }
+    
+    if (call_user_func_array($action, $parameters) === false) {
         return not_found();
     }
 }
@@ -273,12 +285,11 @@ function show_error (Exception $exception) {
  * @return string
  */
 function url ($id, $params = array(), $absolute = false) {
+    $base = router('settings.base_url');    
     $root = router('settings.root');
     $root = $root ? $root : '';
     
-    $base = router('settings.base_url');    
-    
-    $basepath = $absolute ? "{$base}{$root}/" : chop("/$root", '/');
+    $basepath = $absolute ? "{$base}$root/" : chop("/$root", '/');
     
     if ($route = router("routes.$id")) {
         $url = route_replace($route['url'], $params);

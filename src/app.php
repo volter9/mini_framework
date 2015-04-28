@@ -35,7 +35,9 @@ function app_boot ($config, $auto_dispatch = false) {
         auto_dispatch(get_url());
     }
     else {
-        dispatch(fetch_route(get_url(), $_SERVER['REQUEST_METHOD']));
+        $route = fetch_route(get_url(), $_SERVER['REQUEST_METHOD']);
+        
+        dispatch($route);
     }
     
     emit('router:post_dispatch');

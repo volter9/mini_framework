@@ -1,15 +1,23 @@
 <?php
 
 /**
- * Clamp a number $x between $min and $max
+ * Clamp a integer $int between $min and $max
  * 
  * @param int $x
  * @param int $min
  * @param int $max
  * @return int
  */
-function clamp ($x, $min, $max) {
-    return $x < $min ? $min : ($x > $max ? $max : $x);
+function clamp ($int, $min, $max) {
+    if ($int < $min) {
+        return $min;
+    }
+    
+    if ($int > $max) {
+        return $max;
+    }
+    
+    return $int;
 }
 
 /**
@@ -23,13 +31,15 @@ function clamp ($x, $min, $max) {
  */
 function limited_range ($center, $limit, $min, $max) {
     $range = array();
-    $half  = (int)floor($limit / 2);
+    $half  = intval($limit / 2);
     
     $start = $center - $half;
     $end   = $center + $half;
     
     for ($i = $start; $i < $end; $i ++) {
-        $i >= $min && $i <= $max and $range[] = $i;
+        if ($i >= $min && $i <= $max) {
+            $range[] = $i;
+        }
     }
     
     !in_array($min, $range) and array_unshift($range, $min);
@@ -42,25 +52,30 @@ function limited_range ($center, $limit, $min, $max) {
  * Generates pagination array
  * 
  * @param int $total - Total of rows/items
- * @param int $ipp   - Items Per Page
+ * @param int $items - Items Per Page
  * @param int $page  - Page
  * @return array
  */
-function pagination_generate ($total, $ipp, $page) {
-    $offset = $total > $ipp ? ($page - 1) * $ipp : 0;
+function pagination_generate ($total, $items, $page) {
+    $offset = 0;
     
-    $pages = ceil($total / $ipp);
+    if ($total > $items) {
+        $offset = ($page - 1) * $items;
+    }
+    
+    $pages = ceil($total / $items);
     $page  = clamp($page, 1, $pages);
     
     $pagination = array();
     
     if ($pages > 1) {
-        $pagination = limited_range($page, clamp($pages, 1, 9), 1, $pages);
+        $limit      = clamp($pages, 1, 9);
+        $pagination = limited_range($page, $limit, 1, $pages);
     }
     
-    $limit = (int)($ipp - ($offset % $ipp));
+    $limit = intval($items - ($offset % $items));
     
-    return compact('limit', 'offset', 'pages', 'page', 'pagination');
+    return compact('offset', 'pages', 'page', 'pagination', 'limit');
 }
 
 /**

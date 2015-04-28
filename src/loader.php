@@ -34,9 +34,8 @@ function load_php ($file, $ignore = false, $ext = '.php') {
         
         return require $filepath;
     }
-    else if (!$exists) {
-        throw new Exception("File at '$filepath' is not exists!");
-    }
+    
+    throw new Exception("File at '$filepath' is not exists!");
 }
 
 /**

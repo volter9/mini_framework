@@ -197,14 +197,7 @@ function parse_rules ($rules) {
 function parse_rule ($rule) {
     list($validator, $params) = explode(':', $rule);
     
-    $params = array_map(
-        function ($v) {
-            return is_numeric($v) ? (int)$v : $v;
-        }, 
-        explode(',', $params)
-    );
-    
-    return array($validator, $params);
+    return array($validator, array_numerify(explode(',', $params)));
 }
 
 /**

@@ -65,7 +65,8 @@ function stack () {
             
             return;
         }
-        else if ($key && $value === false) {
+        
+        if ($key && $value === false) {
             unset($repo[$key]);
             
             return;

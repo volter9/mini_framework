@@ -49,13 +49,9 @@ function router_find ($url, $method) {
                 preg_match($pattern, $url, $matches)
             )
         ) {
-            $matches = isset($matches) ? $matches : array();
+            $matches = isset($matches) ? array_numerify($matches) : array();
             
             array_shift($matches);
-            
-            $matches = array_map(function ($v) {
-                return is_numeric($v) ? (int)$v : $v;
-            }, $matches);
             
             return compact('found', 'matches');
         }
@@ -110,7 +106,7 @@ function parse_route ($url, $action) {
 function route_replace ($url, $params) {
     $regex = '/:(\w+)\??/';
     
-    if (count($params) !== 0) {
+    if (count($params)) {
         $regex = array_fill(0, count($params), '/:(\w+)\??/');
     }
     else {
@@ -278,16 +274,11 @@ function show_error (Exception $exception) {
  */
 function url ($id, $params = array(), $absolute = false) {
     $root = router('settings.root');
-    $base = router('settings.base_url');
+    $root = $root ? $root : '';
     
-    if ($absolute) {
-        $basepath = "{$base}{$root}/";
-    }
-    else {
-        $root = $root ? $root : '';
-        
-        $basepath = chop("/$root", '/');
-    }
+    $base = router('settings.base_url');    
+    
+    $basepath = $absolute ? "{$base}{$root}/" : chop("/$root", '/');
     
     if ($route = router("routes.$id")) {
         $url = route_replace($route['url'], $params);

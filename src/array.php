@@ -144,3 +144,17 @@ function array_transfer (array $array, $field, $default = '') {
 	
 	return $result;
 }
+
+/**
+ * Turn all string numeric values in array into integers
+ * 
+ * @param array $array
+ * @return array
+ */
+function array_numerify (array $array) {
+    foreach ($array as $key => $value) {
+        is_numeric($value) and $array[$key] = (int)$value;
+    }
+    
+    return $array;
+}

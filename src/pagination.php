@@ -1,6 +1,44 @@
 <?php
 
 /**
+ * Clamp a number $x between $min and $max
+ * 
+ * @param int $x
+ * @param int $min
+ * @param int $max
+ * @return int
+ */
+function clamp ($x, $min, $max) {
+    return $x < $min ? $min : ($x > $max ? $max : $x);
+}
+
+/**
+ * Create a limited sequence
+ * 
+ * @param int $center
+ * @param int $limit
+ * @param int $min
+ * @param int $max
+ * @return int
+ */
+function limited_range ($center, $limit, $min, $max) {
+    $range = array();
+    $half  = (int)floor($limit / 2);
+    
+    $start = $center - $half;
+    $end   = $center + $half;
+    
+    for ($i = $start; $i < $end; $i ++) {
+        $i >= $min && $i <= $max and $range[] = $i;
+    }
+    
+    !in_array($min, $range) and array_unshift($range, $min);
+    !in_array($max, $range) and array_push($range, $max);
+    
+    return $range;
+}
+
+/**
  * Generates pagination array
  * 
  * @param int $total - Total of rows/items
@@ -9,41 +47,15 @@
  * @return array
  */
 function pagination_generate ($total, $ipp, $page) {
-    $offset = 0;
+    $offset = $total > $ipp ? ($page - 1) * $ipp : 0;
+    
     $pages = ceil($total / $ipp);
+    $page  = clamp($page, 1, $pages);
+    
     $pagination = array();
     
-    if ($page >= $pages) {
-        $page = $pages;
-    }
-    
-    if ($total > $ipp) {
-        $offset = ($page - 1) * $ipp;
-    }
-    
     if ($pages > 1) {
-        for ($i = 0, $c = ($pages > 9) ? 9 : $pages; $i < $c; $i++) {
-            if ($pages <= $c) {
-                $pagination[] = $i + 1;
-            }
-            else {
-                if ($i === 0) {
-                    $pagination[$i] = 1;
-                }
-                else if ($i === $c - 1) {
-                    $pagination[$i] = $pages;
-                }
-                else {
-                    $cell = $page - ceil(($c - 1) / 2) + $i;
-                    
-                    if ($cell > $pages - 1 || $cell < 2) {
-                        continue;
-                    }
-                    
-                    $pagination[] = $cell;
-                }
-            }
-        }
+        $pagination = limited_range($page, clamp($pages, 1, 9), 1, $pages);
     }
     
     $limit = (int)($ipp - ($offset % $ipp));

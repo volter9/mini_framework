@@ -8,10 +8,11 @@
  * @return mixed
  */
 function session ($key = null, $value = null) {
-    if ($key && $value) {
+    if ($key && $value !== null) {
         $_SESSION[$key] = $value;
     }
-    else if ($key && $value === false) {
+    
+    if ($key && $value === false) {
         unset($_SESSION[$key]);
     }
     
@@ -95,7 +96,6 @@ function sanitize ($input) {
             return sanitize($v);
         }, $input);
     }
-    else {
-        return filter_var($input, FILTER_SANITIZE_STRING);
-    }
+    
+    return filter_var($input, FILTER_SANITIZE_STRING);
 }

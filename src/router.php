@@ -202,7 +202,7 @@ function invoke_action (array $route, array $parameters) {
     $action = $route['action'];
     $action = is_callable($action) ? $action : "action_{$action['name']}";
     
-    if (!is_callable($action)) {
+    if (is_string($action)) {
         $functions = function_exists('actions_init') && function_exists($action);
         $not_found = actions_init() === false;
         

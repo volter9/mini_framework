@@ -40,12 +40,12 @@ function router_find ($url, $method) {
     
     foreach ($routes as $found) {
         $routeUrl = route_process($found['url']);
-        $pattern = "#^{$routeUrl}\$#i";
+        $pattern  = "#^{$routeUrl}\$#i";
         
-        if (
-            in_array($found['method'], array('*', $method)) &&
-            preg_match($pattern, $url, $matches)
-        ) {
+        $correct_method = in_array($found['method'], array('*', $method));
+        $matched_url    = preg_match($pattern, $url, $matches);
+        
+        if ($correct_method && $matched_url) {
             $matches = array_numerify($matches);
             
             array_shift($matches);
@@ -82,12 +82,11 @@ function route_process ($url) {
  */
 function parse_route ($url, $action) {
     $name = 'index';
+    $file = $action;
     
     list($method, $id, $url) = explode(' ', $url);
     
     if (is_string($action)) {
-        $file = $action;
-        
         if (strpos($action, ':') !== false) {
             list($file, $name) = explode(':', $action);
         }
@@ -126,7 +125,7 @@ function route_replace ($url, $params) {
  * @return string
  */
 function route_cleanup ($url) {
-    return chop(preg_replace('/:(\w+)\??/', '', $url), '/');
+    return preg_replace('/:(\w+)\??/', '', $url);
 };
 
 /**
@@ -203,16 +202,17 @@ function invoke_action (array $route, array $parameters) {
     $action = is_callable($action) ? $action : "action_{$action['name']}";
     
     if (is_string($action)) {
-        $functions = function_exists('actions_init') && function_exists($action);
-        $not_found = actions_init() === false;
+        if (function_exists('actions_init') && actions_init() === false) {
+            not_found();
+        }
         
-        if (!$functions || $not_found) {
-            return not_found();
+        if (!function_exists($action)) {
+            not_found();
         }
     }
     
     if (call_user_func_array($action, $parameters) === false) {
-        return not_found();
+        not_found();
     }
 }
 
@@ -223,18 +223,14 @@ function invoke_action (array $route, array $parameters) {
  */
 function get_url () {
     $root = router('settings.root');
+    $url  = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
     
-    $url = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-    
-    if ($root !== '' && strpos($url, $root) !== false) {
+    if ($root && strpos($url, $root) !== false) {
         $url = explode($root, $url);
         $url = end($url);
     }
     
-    $url = trim($url, ' /');
-    $url = strpos($url, 'index.php') === 0 ? substr($url, 9) : $url;
-    
-    return $url;
+    return trim($url, ' /');
 }
 
 /**
@@ -256,9 +252,7 @@ function get_baseurl ($base, $root) {
  * Show page 404
  */
 function not_found () {
-    if (router('supress')) {
-        return;
-    }
+    header("HTTP/1.1 404 Not Found");
     
     emit('router:not_found');
     
@@ -282,22 +276,22 @@ function show_error (Exception $exception) {
  * @param string $id
  * @param array $params
  * @param bool $absolute
- * @return string
+ * @return string|bool
  */
 function url ($id, $params = array(), $absolute = false) {
+    if (!$route = router("routes.$id")) {
+        return false;
+    }
+    
     $base = router('settings.base_url');    
     $root = router('settings.root');
     $root = $root ? $root : '';
-    
+
     $basepath = $absolute ? "{$base}$root/" : chop("/$root", '/');
     
-    if ($route = router("routes.$id")) {
-        $url = route_replace($route['url'], $params);
-        
-        return "$basepath/$url";
-    }
+    $url = route_replace($route['url'], $params);
     
-    return false;
+    return "$basepath/$url";
 }
 
 /**
@@ -319,10 +313,8 @@ function path ($path = '') {
  * 
  * @see url
  */
-function redirect ($id, $params = array(), $absolute = false) {
-    $url = url($id, $params, $absolute);
-    
-    header("Location: $url") xor exit;
+function redirect ($id, $params = array()) {
+    redirect_path(url($id, $params));
 }
 
 /**
@@ -331,8 +323,16 @@ function redirect ($id, $params = array(), $absolute = false) {
  * @see path
  * @param string $path
  */
-function redirect_url ($path) {
-    $url = path($path);
-    
+function redirect_url ($url) {
+    redirect_path(path($url));
+}
+
+/**
+ * Redirect to path
+ * 
+ * @param string $path
+ * @return string
+ */
+function redirect_path ($path) {
     header("Location: $path") xor exit;
 }

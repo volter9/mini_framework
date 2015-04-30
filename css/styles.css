@@ -217,7 +217,8 @@ section.centered pre code {
 }
 
 .features .right {
-    width: calc(100% - 220px);
+    float: none;
+    padding-left: 220px;
 }
 
 .features .right h3 {

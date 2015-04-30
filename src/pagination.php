@@ -24,20 +24,17 @@ function clamp ($int, $min, $max) {
  * @return int
  */
 function limited_range ($center, $limit, $min, $max) {
-    if ($limit < 1) {
+    if ($limit < 2) {
         return array();
     }
     
-    $range = array();
     $half  = intval($limit / 2);
+    $start = (int)clamp($center - $half, $min, $max);
+    $end   = (int)clamp($center + $half, $min, $max);
+    $range = range($start, $end);
     
-    $start = clamp($center - $half, $min + 1, $max - 1);
-    $end   = clamp($center + $half, $min + 1, $max);
-    
-    for ($i = $start; $i < $end; $range[] = $i, $i ++);
-    
-    array_unshift($range, (int)$min);
-    array_push($range, (int)$max);
+    array_splice($range,  0, 1, (int)$min);
+    array_splice($range, -1, 1, (int)$max);
     
     return $range;
 }
@@ -51,7 +48,7 @@ function limited_range ($center, $limit, $min, $max) {
  * @return array
  */
 function pagination_generate ($total, $items, $page) {
-    $offset = $total > $items ? ($page - 1) * $items : 0;
+    $offset = ($page - 1) * $items;
     
     $pages = ceil($total / $items);
     $page  = clamp($page, 1, $pages);

@@ -125,7 +125,7 @@ function route_replace ($url, $params) {
  * @return string
  */
 function route_cleanup ($url) {
-    return preg_replace('/:(\w+)\??/', '', $url);
+    return chop(preg_replace('/:(\w+)\??/', '', $url), '/ ');
 };
 
 /**

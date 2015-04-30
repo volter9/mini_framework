@@ -9,15 +9,9 @@
  * @return int
  */
 function clamp ($int, $min, $max) {
-    if ($int < $min) {
-        return $min;
-    }
+    $int = max($int, $min);
     
-    if ($int > $max) {
-        return $max;
-    }
-    
-    return $int;
+    return min($int, $max);
 }
 
 /**
@@ -30,20 +24,20 @@ function clamp ($int, $min, $max) {
  * @return int
  */
 function limited_range ($center, $limit, $min, $max) {
+    if ($limit < 1) {
+        return array();
+    }
+    
     $range = array();
     $half  = intval($limit / 2);
     
-    $start = $center - $half;
-    $end   = $center + $half;
+    $start = clamp($center - $half, $min + 1, $max - 1);
+    $end   = clamp($center + $half, $min + 1, $max);
     
-    for ($i = $start; $i < $end; $i ++) {
-        if ($i >= $min && $i <= $max) {
-            $range[] = $i;
-        }
-    }
+    for ($i = $start; $i < $end; $range[] = $i, $i ++);
     
-    !in_array($min, $range) and array_unshift($range, $min);
-    !in_array($max, $range) and array_push($range, $max);
+    array_unshift($range, (int)$min);
+    array_push($range, (int)$max);
     
     return $range;
 }
@@ -52,28 +46,20 @@ function limited_range ($center, $limit, $min, $max) {
  * Generates pagination array
  * 
  * @param int $total - Total of rows/items
- * @param int $items - Items Per Page
+ * @param int $items - Items per page
  * @param int $page  - Page
  * @return array
  */
 function pagination_generate ($total, $items, $page) {
-    $offset = 0;
-    
-    if ($total > $items) {
-        $offset = ($page - 1) * $items;
-    }
+    $offset = $total > $items ? ($page - 1) * $items : 0;
     
     $pages = ceil($total / $items);
     $page  = clamp($page, 1, $pages);
     
-    $pagination = array();
+    $limit = clamp($pages, 1, 9);
+    $pagination = limited_range($page, $limit, 1, $pages);
     
-    if ($pages > 1) {
-        $limit      = clamp($pages, 1, 9);
-        $pagination = limited_range($page, $limit, 1, $pages);
-    }
-    
-    $limit = intval($items - ($offset % $items));
+    $limit = intval($items - $offset % $items);
     
     return compact('offset', 'pages', 'page', 'pagination', 'limit');
 }

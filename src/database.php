@@ -127,6 +127,10 @@ function db_insert ($table, array $data, PDO $pdo = null) {
         $pdo
     );
     
+    if (!$pdo) {
+        $pdo = db('active');
+    }
+    
     return $statement->rowCount() ? $pdo->lastInsertId() : 0;
 }
 

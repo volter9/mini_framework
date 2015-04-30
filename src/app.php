@@ -6,7 +6,7 @@
  * @const string MF_VERSION Version of mini_blog
  * @const string MF_API_DIR Path to system files
  */
-define('MF_VERSION', '1.2');
+define('MF_VERSION', '1.2.1');
 define('MF_API_DIR', __DIR__ . '/');
 
 /**

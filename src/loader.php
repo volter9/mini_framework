@@ -1,20 +1,6 @@
 <?php
 
 /**
- * Loaded files container
- * 
- * @param string $file
- * @param boolean $loaded
- * @return mixed
- */
-function loads ($file = null, $loaded = null) {
-    static $repo = null;    
-    $repo or $repo = repo();
-    
-    return $repo($file, $loaded);
-}
-
-/**
  * Load a php file
  * 
  * @param string $file
@@ -22,6 +8,8 @@ function loads ($file = null, $loaded = null) {
  * @param string $ext
  */
 function load_php ($file, $ignore = false, $ext = '.php') {
+    static $loads = array();
+    
     if (ends_with($file, '.php')) {
         $file = substr($file, 0, -4);
     }
@@ -29,8 +17,8 @@ function load_php ($file, $ignore = false, $ext = '.php') {
     $filepath = $file . $ext;
     $exists   = file_exists($filepath);
     
-    if ($exists && !loads($file) || $ignore) {
-        loads($file, true);
+    if ($exists && !isset($loads[$file]) || $ignore) {
+        $loads[$file] = true;
         
         return require $filepath;
     }

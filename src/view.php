@@ -64,6 +64,17 @@ function render ($__view__, array $__data__) {
 }
 
 /**
+ * Show an error
+ * 
+ * @param Exception $exception
+ */
+function show_error (Exception $exception) {
+    $data = array('exception' => $exception);
+    
+    view('error', $data) xor exit;
+}
+
+/**
  * Get template name from 
  * 
  * @param string $template

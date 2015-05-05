@@ -260,17 +260,6 @@ function not_found () {
 }
 
 /**
- * Show an error
- * 
- * @param Exception $exception
- */
-function show_error (Exception $exception) {
-    $data = array('exception' => $exception);
-    
-    view('error', $data) xor exit;
-}
-
-/**
  * Create a full link to route 
  * 
  * @param string $id

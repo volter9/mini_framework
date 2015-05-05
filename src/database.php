@@ -117,16 +117,14 @@ function db_prepare_exception (Exception $e, $query, array $data) {
  * @param array $data
  * @param bool $one
  * @param \PDO $pdo
- * @return array|false
+ * @return array
  */
 function db_select ($query, array $data = array(), $one = false, PDO $pdo = null) {
     $statement = prepare($query, $data, $pdo);
     
-    if ($statement->rowCount() > 0) {
-        return $one ? $statement->fetch() : $statement->fetchAll();
-    }
+    $result = $one ? $statement->fetch() : $statement->fetchAll();
     
-    return array();
+    return $result ? $result : array();
 }
 
 /**

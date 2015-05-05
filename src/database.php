@@ -43,10 +43,8 @@ function db_connect ($group = 'default') {
  * @return \PDO
  */
 function db_create_connection ($config) {
-    extract($config);
-    
     try {
-        $db = new PDO("mysql:host=$host;dbname=$name;charset=$charset", $user, $password);
+        $db = new PDO(db_build_dsn($config), $config['user'], $config['password']);
         $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         $db->setAttribute(PDO::ATTR_EMULATE_PREPARES, FALSE);
         $db->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
@@ -56,6 +54,29 @@ function db_create_connection ($config) {
     catch (PDOException $exception) {
         show_error($exception);
     }
+}
+
+/**
+ * Build PDO DSN constructor string
+ * 
+ * @param array $config
+ * @return string
+ */
+function db_build_dsn (array $config) {
+    $attributes = array_exclude($config, array('driver', 'user', 'password'));
+    $attributes['dbname'] = $attributes['name'];
+    
+    unset($attributes['name']);
+    
+    foreach ($attributes as $key => $value) {
+        $attributes[$key] = "$key=$value";
+    }
+    
+    $attributes = implode(';', $attributes);
+    
+    $driver = array_get($config, 'driver', 'mysql');
+    
+    return "$driver:$attributes";
 }
 
 /**

@@ -63,6 +63,10 @@ function db_create_connection ($config) {
  * @return string
  */
 function db_build_dsn (array $config) {
+    if ($dsn = array_get($config, 'dsn')) {
+        return $dsn;
+    }
+    
     $attributes = array_exclude($config, array('driver', 'user', 'password'));
     $attributes['dbname'] = $attributes['name'];
     

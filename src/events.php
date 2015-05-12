@@ -33,6 +33,7 @@ function bind ($event, $callback) {
  * Emit an event
  * 
  * @param string $event
+ * @return array
  */
 function emit ($event) {
     $args  = array_slice(func_get_args(), 1);

@@ -39,6 +39,7 @@ function route ($url, $action) {
  * Find route
  * 
  * @param string $url
+ * @param string $method
  * @return array|bool
  */
 function router_find ($url, $method) {
@@ -111,7 +112,7 @@ function parse_route ($url, $action) {
  * @param string $url
  * @param array $params
  */
-function route_replace ($url, $params) {
+function route_replace ($url, array $params) {
     $regex = '/:(\w+)\??/';
     
     if (count($params)) {
@@ -316,7 +317,6 @@ function redirect ($id, $params = array()) {
  * Redirect to URL relative to the website location
  * 
  * @see path
- * @param string $path
  */
 function redirect_url ($url) {
     redirect_path(path($url));
@@ -326,7 +326,6 @@ function redirect_url ($url) {
  * Redirect to path
  * 
  * @param string $path
- * @return string
  */
 function redirect_path ($path) {
     header("Location: $path") xor exit;

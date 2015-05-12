@@ -9,7 +9,7 @@
 /**
  * Clamp a integer $int between $min and $max
  * 
- * @param int $x
+ * @param int $int
  * @param int $min
  * @param int $max
  * @return int
@@ -98,7 +98,7 @@ function paginate_query ($query, array $data, $limit, $page) {
  * Replace selects by COUNT(*) 
  * 
  * @param string $query
- * @return $query
+ * @return string
  */
 function paginate_query_replace_select ($query) {
     $from = stripos($query, 'from');
@@ -111,7 +111,7 @@ function paginate_query_replace_select ($query) {
  * Remove joins
  * 
  * @param string $query
- * @return $query
+ * @return string
  */
 function pagiante_query_remove_joins ($query) {
     static $regex = '/(left|inner|outer|right) join [\w\d\s]+ ON \([^\)]+\)/i';

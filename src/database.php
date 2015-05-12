@@ -313,3 +313,16 @@ function db_prepare ($query, array $parameters, PDO $pdo = null) {
     
     return $statement;
 }
+
+/**
+ * Execute a SQL query
+ * 
+ * @param string $query
+ * @param \PDO $pdo
+ * @return int|bool
+ */
+function db_query ($query, PDO $pdo = null) {
+    $pdo = $pdo ? $pdo : db('active');
+    
+    return $pdo->exec($query);
+}

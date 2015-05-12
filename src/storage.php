@@ -9,7 +9,7 @@
 /**
  * Storage container with getter and setter abilities
  * 
- * @param array $default
+ * @param array $repo
  * @param bool $readonly
  * @return \Closure
  */
@@ -81,7 +81,7 @@ function stack () {
 /**
  * Simple key-value storage
  * 
- * @param array $default
+ * @param array $repo
  */
 function box (array $repo = array()) {
     /**

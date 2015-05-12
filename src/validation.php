@@ -123,9 +123,10 @@ function validate (array $data, array $rules) {
  * @param string $field
  * @param mixed $value
  * @param array $rules
+ * @param array $data
  * @return bool|array
  */
-function validate_field ($field, $value, $rules, array $data) {
+function validate_field ($field, $value, array $rules, array $data) {
     $error = null;
     
     foreach (parse_rules($rules) as $rule) {
@@ -204,7 +205,6 @@ function parse_rule ($rule) {
 /**
  * Get validation errors
  * 
- * @param bool $each
  * @param bool $string
  * @return array|string
  */

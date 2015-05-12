@@ -16,8 +16,8 @@
 function load_php ($file, $ignore = false, $ext = '.php') {
     static $loads = array();
     
-    if (ends_with($file, '.php')) {
-        $file = substr($file, 0, -4);
+    if (ends_with($file, $ext)) {
+        $file = substr($file, 0, -strlen($ext));
     }
     
     $filepath = $file . $ext;
@@ -59,7 +59,7 @@ function load_api ($file, $ignore = false) {
  * 
  * @param array $files
  */
-function load_files ($files) {
+function load_files (array $files) {
     if (empty($files)) {
         return false;
     }
@@ -73,6 +73,7 @@ function load_files ($files) {
  * Load model functions 
  * 
  * @param string $model
+ * @param string $path
  */
 function load_model ($model, $path = 'app/models') {
     if (file_exists(base_path("$path/$model.php"))) {

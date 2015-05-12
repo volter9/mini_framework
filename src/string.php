@@ -14,7 +14,7 @@
  * @return bool
  */
 function starts_with ($haystack, $needle) {
-    return strpos($haystack, $needle) === 0;
+    return $needle && strpos($haystack, $needle) === 0;
 }
 
 /**
@@ -25,7 +25,7 @@ function starts_with ($haystack, $needle) {
  * @return bool
  */
 function ends_with ($haystack, $needle) {
-    return strpos($haystack, $needle) === strlen($haystack) - strlen($needle);
+    return $needle && strpos($haystack, $needle) === strlen($haystack) - strlen($needle);
 }
 
 /**
@@ -36,7 +36,7 @@ function ends_with ($haystack, $needle) {
  * @return bool
  */
 function contains ($haystack, $needle) {
-    return strpos($haystack, $needle) !== false;
+    return $needle && strpos($haystack, $needle) !== false;
 }
 
 /**
@@ -80,6 +80,7 @@ function before ($haystack, $needle, $with_needle = false) {
  * @return string
  */
 function deduplicate ($haystack, $needle) {
+    $needle = preg_quote($needle, '@');
     $regexp = "@(?:{$needle})+@i";
     
     return preg_replace($regexp, $needle, $haystack);

@@ -33,6 +33,8 @@ function session ($key = null, $value = null) {
  * Get input depending on method
  * 
  * @param string $key
+ * @param bool $sanitize
+ * @return array
  */
 function input ($key = null, $sanitize = false) {
     $array = get_array();
@@ -78,7 +80,7 @@ function get_array () {
  * @return bool
  */
 function is_post () {
-    return $_SERVER['REQUEST_METHOD'] === 'POST';
+    return strtoupper($_SERVER['REQUEST_METHOD']) === 'POST';
 }
 
 /**

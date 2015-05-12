@@ -53,7 +53,6 @@ function build_form (array $scheme, array $data) {
  * Build an element
  * 
  * @param array $data
- * @return void
  */
 function build_element ($type, array $data) {
     if (strpos($type, ':') !== false) {

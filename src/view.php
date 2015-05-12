@@ -92,7 +92,7 @@ function parse_template ($template) {
 /**
  * Transforms a template name to full template path
  * 
- * @param string $template
+ * @param string $view
  * @return string
  */
 function view_path ($view) {

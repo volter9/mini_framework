@@ -52,8 +52,10 @@ function app_boot ($config, $auto_dispatch = false) {
 /**
  * Loads the system
  * 
- * Useful for unit testing purposes or exclude routing from loading
- * process
+ * Useful for unit testing purposes or excluding routing from 
+ * loading process
+ * 
+ * @param callable $config
  */
 function system_load ($config) {
     load_system();

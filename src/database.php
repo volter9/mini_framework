@@ -1,6 +1,12 @@
 <?php
 
 /**
+ * Database functions
+ * 
+ * @package mini_framework
+ */
+
+/**
  * Database storage
  * 
  * @param string $key

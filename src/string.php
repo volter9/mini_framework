@@ -1,6 +1,12 @@
 <?php
 
 /**
+ * String utilities
+ * 
+ * @package mini_framework
+ */
+
+/**
  * Check if string is starts with other string
  * 
  * @param string $haystack

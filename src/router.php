@@ -1,6 +1,12 @@
 <?php
 
 /**
+ * HTTP routing (mostly)
+ * 
+ * @package mini_framework
+ */
+
+/**
  * Router storage
  * 
  * @param string $key

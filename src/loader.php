@@ -1,6 +1,12 @@
 <?php
 
 /**
+ * mini_framework loader functions
+ * 
+ * @package mini_framework
+ */
+
+/**
  * Load a php file
  * 
  * @param string $file

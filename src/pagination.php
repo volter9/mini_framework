@@ -1,6 +1,12 @@
 <?php
 
 /**
+ * Pagination utilities
+ * 
+ * @package mini_framework
+ */
+
+/**
  * Clamp a integer $int between $min and $max
  * 
  * @param int $x

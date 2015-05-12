@@ -1,6 +1,12 @@
 <?php
 
 /**
+ * Internatinalization (aka i18n) functions
+ * 
+ * @package mini_framework
+ */
+
+/**
  * Language storage
  * 
  * @param mixed $key

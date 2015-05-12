@@ -1,6 +1,12 @@
 <?php
 
 /**
+ * Array helper/utility functions
+ * 
+ * @package mini_framework
+ */
+
+/**
  * Get key using dot notation in multidimensional array
  * 
  * @param array $array

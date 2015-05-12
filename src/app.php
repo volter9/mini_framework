@@ -1,6 +1,12 @@
 <?php
 
 /**
+ * Application initialization functions
+ * 
+ * @package mini_framework
+ */
+
+/**
  * mini_framework constants
  * 
  * @const string MF_VERSION Version of mini_blog

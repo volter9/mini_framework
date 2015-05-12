@@ -1,6 +1,12 @@
 <?php
 
 /**
+ * Events functions
+ * 
+ * @package mini_framework
+ */
+
+/**
  * Events storage
  * 
  * @param string $event

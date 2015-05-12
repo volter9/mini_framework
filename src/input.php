@@ -1,6 +1,12 @@
 <?php
 
 /**
+ * Input functions (session and get/post values)
+ * 
+ * @package mini_framework
+ */
+
+/**
  * Set/get session
  * 
  * @param string $key

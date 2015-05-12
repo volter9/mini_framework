@@ -102,7 +102,7 @@ function validate (array $data, array $rules) {
     $errors = array();
     
     foreach ($rules as $field => $set) {
-        $value = isset($data[$field]) ? $data[$field] : null;
+        $value = array_get($data, $field, null);
         $error = validate_field($field, $value, $set, $data);
         
         if (is_string($error)) {
@@ -118,13 +118,15 @@ function validate (array $data, array $rules) {
 /**
  * Validate a field
  * 
+ * @todo This function is **too** long
+ *       You need to break down it into smaller functions
  * @param string $field
  * @param mixed $value
  * @param array $rules
  * @return bool|array
  */
 function validate_field ($field, $value, $rules, array $data) {
-    $errors = null;
+    $error = null;
     
     foreach (parse_rules($rules) as $rule) {
         $name      = $rule['validator'];
@@ -137,29 +139,28 @@ function validate_field ($field, $value, $rules, array $data) {
             );
         }
         
-        $result = call_user_func_array($validator, array_merge(array($value, $data), $params));
+        $validator_params = array_merge(array($value, $data), $params);
+        $result = (bool)call_user_func_array($validator, $validator_params);
         
-        if (!(bool)$result) {
-            $message = validation("messages.$name");
-            
-            if (is_string($message)) {
-                array_unshift($params, $message, validation("fields.$field"));
-                
-                $message = call_user_func_array('sprintf', $params);
-            }
-            else {
-                array_unshift($params, validation("fields.$field"));
-                
-                $message = call_user_func_array($message, $params);
-            }
-            
-            $errors = $message;
-            
-            break;
+        if ($result) {
+            continue;
         }
+        
+        $message = validation("messages.$name");
+        $string  = is_string($message);
+        
+        array_unshift($params, validation("fields.$field"));
+        
+        if ($string) {
+            array_unshift($params, $message);
+        }
+        
+        $error = call_user_func_array($string ? 'sprintf' : $message, $params);
+        
+        break;
     }
     
-    return $errors;
+    return $error;
 }
 
 /**

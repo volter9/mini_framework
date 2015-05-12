@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Storage
+ * Storage closures
  * 
  * @package mini_framework
  */
@@ -13,9 +13,7 @@
  * @param bool $readonly
  * @return \Closure
  */
-function repo (array $default = array(), $readonly = false) {
-    $repo = $default;
-    
+function repo (array $repo = array(), $readonly = false) {
     /**
      * Repository callback itself
      * 
@@ -85,9 +83,7 @@ function stack () {
  * 
  * @param array $default
  */
-function box (array $default = array()) {
-    $repo = $default;
-    
+function box (array $repo = array()) {
     /**
      * Repository callback
      * 

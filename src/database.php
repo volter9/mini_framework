@@ -120,7 +120,7 @@ function db_prepare_exception (Exception $e, $query, array $data) {
  * @return array
  */
 function db_select ($query, array $data = array(), $one = false, PDO $pdo = null) {
-    $statement = prepare($query, $data, $pdo);
+    $statement = db_prepare($query, $data, $pdo);
     
     $result = $one ? $statement->fetch() : $statement->fetchAll();
     
@@ -144,7 +144,7 @@ function db_insert ($table, array $data, PDO $pdo = null) {
     
     list($keys, $placeholders) = db_prepare_insert($data);
     
-    $statement = prepare(
+    $statement = db_prepare(
         sprintf($query, $table, $keys, $placeholders), 
         array_values($data), 
         $pdo
@@ -203,7 +203,7 @@ function db_update ($table, array $data, array $where = array(), PDO $pdo = null
     );
     
     $update = db_prepare_update($data);
-    $statement = prepare(sprintf($query, $update, $where['query']), $values, $pdo);
+    $statement = db_prepare(sprintf($query, $update, $where['query']), $values, $pdo);
     
     return $statement->rowCount() > 0;
 }
@@ -236,7 +236,7 @@ function db_delete ($table, array $where = array(), PDO $pdo = null) {
     $query = "DELETE FROM `$table` %s";
     $where = db_prepare_where($where);
     
-    $statement = prepare(sprintf($query, $where['query']), $where['data'], $pdo);
+    $statement = db_prepare(sprintf($query, $where['query']), $where['data'], $pdo);
     
     return $statement->rowCount() > 0;
 }
@@ -294,7 +294,7 @@ function db_prepare_where_field ($field) {
  * @param \PDO $pdo
  * @return \PDOStatement
  */
-function prepare ($query, array $parameters, PDO $pdo = null) {
+function db_prepare ($query, array $parameters, PDO $pdo = null) {
     $pdo = $pdo ? $pdo : db('active');
     
     try {

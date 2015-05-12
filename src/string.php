@@ -42,6 +42,10 @@ function contains ($haystack, $needle) {
  * @return string
  */
 function after ($haystack, $needle, $with_needle = false) {
+    if ($needle === '') {
+        return $haystack;
+    }
+    
     return substr($haystack, strrpos($haystack, $needle) + strlen($needle) * !$with_needle);
 }
 
@@ -54,6 +58,10 @@ function after ($haystack, $needle, $with_needle = false) {
  * @return string
  */
 function before ($haystack, $needle, $with_needle = false) {
+    if ($needle === '') {
+        return $haystack;
+    }
+    
     return substr($haystack, 0, strpos($haystack, $needle) + strlen($needle) * $with_needle);
 }
 

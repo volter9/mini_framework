@@ -96,6 +96,10 @@ function parse_template ($template) {
  * @return string
  */
 function view_path ($view) {
+    if (starts_with($view, '/')) {
+        return "$view.php";
+    }
+    
     $directory = chop(views('templates.directory'), '/');
     
     list($template, $view) = parse_template($view);

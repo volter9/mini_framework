@@ -68,12 +68,12 @@ function load_files ($files) {
  * 
  * @param string $model
  */
-function load_model ($model, $path = 'models') {
-    if (file_exists(app_path("$path/$model.php"))) {
-        load_app_file("$path/$model");
+function load_model ($model, $path = 'app/models') {
+    if (file_exists(base_path("$path/$model.php"))) {
+        load_php("$path/$model");
+        
+        function_exists($model = "{$model}_init") and $model();
     }
-    
-    function_exists($model = "{$model}_init") and $model();
 }
 
 /**

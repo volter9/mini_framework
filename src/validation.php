@@ -122,11 +122,11 @@ function validate (array $data, array $rules) {
  *       You need to break down it into smaller functions
  * @param string $field
  * @param mixed $value
- * @param array $rules
+ * @param string $rules
  * @param array $data
  * @return bool|array
  */
-function validate_field ($field, $value, array $rules, array $data) {
+function validate_field ($field, $value, $rules, array $data) {
     $error = null;
     
     foreach (parse_rules($rules) as $rule) {

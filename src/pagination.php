@@ -34,7 +34,7 @@ function limited_range ($center, $limit, $min, $max) {
         return array();
     }
     
-    $half  = intval($limit / 2);
+    $half  = ceil($limit / 2);
     $start = (int)clamp($center - $half, $min, $max);
     $end   = (int)clamp($center + $half, $min, $max);
     $range = range($start, $end);

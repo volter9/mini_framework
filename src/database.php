@@ -33,7 +33,7 @@ function db_connect ($group = 'default') {
     $config = db($group);
     
     if (!$config) {
-        throw new Exception("Group '$group' does not exists");
+        throw new Exception("Database group '$group' does not exists!");
     }
     
     $db = db_create_connection($config);

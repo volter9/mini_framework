@@ -15,7 +15,7 @@
  * @const string MF_APP_DIR Path of app dir (app/)
  */
 define('MF_BASEPATH', __DIR__ . '/');
-define('MF_APP_DIR' , MF_BASEPATH . 'app/');
+define('MF_APP_DIR' , __DIR__ . '/app/');
 define('MF_DEBUG'   , true);
 
 $time = microtime(true);

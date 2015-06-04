@@ -50,6 +50,16 @@ function build_form (array $scheme, array $data) {
 }
 
 /**
+ * Path to form element
+ * 
+ * @param string $type
+ * @return string
+ */
+function form_element_path ($type) {
+    return starts_with($type, '/') ? $type : "forms/elements/$type";
+}
+
+/**
  * Build an element
  * 
  * @param array $data
@@ -61,7 +71,7 @@ function build_element ($type, array $data) {
         return build_element_provider($type, $provider, $data);
     }
     
-    view("forms/elements/$type", $data);
+    view(form_element_path($type), $data);
 }
 
 /**
@@ -80,7 +90,7 @@ function build_element_provider ($type, $provider, array $data) {
         );
     }
     
-    view("forms/elements/$type", array_merge($data, array(
+    view(form_element_path($type), array_merge($data, array(
         'data' => $data_provider()
     )));
 }

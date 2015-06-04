@@ -210,7 +210,7 @@ function parse_rule ($rule) {
  */
 function validation_errors ($string = false) {
     if (!$errors = validation('errors')) {
-        return false;
+        return array();
     }
     
     return $string ? implode(' ', $errors) : $errors;

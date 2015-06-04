@@ -56,6 +56,22 @@ function after ($haystack, $needle, $with_needle = false) {
 }
 
 /**
+ * Get everyting after first found needle
+ * 
+ * @param string $haystack
+ * @param string $needle
+ * @param bool $with_needle
+ * @return string
+ */
+function after_first ($haystack, $needle, $with_needle) {
+    if ($needle === '') {
+        return $haystack;
+    }
+    
+    return substr($haystack, strpos($haystack, $needle) - strlen($needle) * !$with_needle);
+}
+
+/**
  * Get everyting before first found needle
  * 
  * @param string $haystack
@@ -69,6 +85,22 @@ function before ($haystack, $needle, $with_needle = false) {
     }
     
     return substr($haystack, 0, strpos($haystack, $needle) + strlen($needle) * $with_needle);
+}
+
+/**
+ * Get everyting before last found needle
+ * 
+ * @param string $haystack
+ * @param string $needle
+ * @param bool $with_needle
+ * @return string
+ */
+function before_last ($haystack, $needle, $with_needle) {
+    if ($needle === '') {
+        return $haystack;
+    }
+    
+    return substr($haystack, 0, strrpos($haystack, $needle) - strlen($needle) * $with_needle);
 }
 
 /**

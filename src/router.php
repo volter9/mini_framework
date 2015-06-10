@@ -147,7 +147,7 @@ function fetch_route ($url, $method) {
         return not_found();
     }
     
-    emit('router:found', $found['found']);
+    emit('router:found', $found['found'], $found['matches']);
     
     return $found;
 }

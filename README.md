@@ -1,19 +1,19 @@
 # mini_framework
 
-Простой MVC PHP5 фреймворк без классов или ООП
+Простой процедурный MVC PHP5 фреймворк
 
 # Установить
 
 Можно установить mini_framework двумя способами:
 
-## Через композер
+## Через composer
 
-Скачайте/установите [композер](https://getcomposer.org/doc/00-intro.md) и добавьте в `composer.json` данную строчку:
+Скачайте/установите [composer](https://getcomposer.org/doc/00-intro.md), создайте файл `composer.json`, добавьте в `composer.json` код:
 
 ```json
 {
     "require": {
-        "volter/mini_framework": "1.2.1"
+        "volter/mini_framework": "1.2.2"
     }
 }
 ```
@@ -22,8 +22,12 @@
 
 ## Скачать
 
-Просто скачайте репозиторий и разместите на веб сервере. Вместе с mini_framework прилагается демо приложение которое демонстрирует базовые способности mini_framework (контролеры, маршрутизацию, представления и некоторых помощников представления).
+Просто скачайте репозиторий, разместите на веб сервере и подключите `src/app.php` файл:
+
+```php
+require 'src/app.php';
+```
 
 # Документация
 
-Документация можете найти в [Wiki](https://github.com/Volter9/mini_framework/wiki).
+Документацию можете найти в [Wiki](https://github.com/Volter9/mini_framework/wiki).

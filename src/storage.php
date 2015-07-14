@@ -4,6 +4,8 @@
  * Storage closures
  * 
  * @package mini_framework
+ * @requrie array
+ * @require loader
  */
 
 /**
@@ -127,6 +129,7 @@ function config ($file) {
  */
 function storage ($key = null, $value = null) {
     static $repo = null;
+    
     $repo or $repo = repo();
     
     return $repo($key, $value);

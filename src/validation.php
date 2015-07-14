@@ -4,6 +4,8 @@
  * Data validation
  * 
  * @package mini_framework
+ * @require storage
+ * @require array
  */
 
 /**

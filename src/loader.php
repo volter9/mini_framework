@@ -4,6 +4,8 @@
  * mini_framework loader functions
  * 
  * @package mini_framework
+ * @require app
+ * @require string
  */
 
 /**

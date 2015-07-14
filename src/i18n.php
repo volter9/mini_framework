@@ -4,6 +4,8 @@
  * Internatinalization (aka i18n) functions
  * 
  * @package mini_framework
+ * @require storage
+ * @require loader
  */
 
 /**

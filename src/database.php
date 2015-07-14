@@ -4,6 +4,7 @@
  * Database functions
  * 
  * @package mini_framework
+ * @require storage
  */
 
 /**
@@ -49,17 +50,12 @@ function db_connect ($group = 'default') {
  * @return \PDO
  */
 function db_create_connection ($config) {
-    try {
-        $db = new PDO(db_build_dsn($config), $config['user'], $config['password']);
-        $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        $db->setAttribute(PDO::ATTR_EMULATE_PREPARES, FALSE);
-        $db->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-        
-        return $db;
-    }
-    catch (PDOException $exception) {
-        show_error($exception);
-    }
+    $db = new PDO(db_build_dsn($config), $config['user'], $config['password']);
+    $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $db->setAttribute(PDO::ATTR_EMULATE_PREPARES, FALSE);
+    $db->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+    
+    return $db;
 }
 
 /**

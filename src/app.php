@@ -4,6 +4,8 @@
  * Application initialization functions
  * 
  * @package mini_framework
+ * @require storage
+ * @require loader
  */
 
 /**
@@ -37,16 +39,25 @@ function app_boot ($config, $auto_dispatch = false) {
     
     emit('router:pre_dispatch');
     
-    if ($auto_dispatch) {
-        auto_dispatch(get_url());
-    }
-    else {
-        $route = fetch_route(get_url(), $_SERVER['REQUEST_METHOD']);
-        
-        dispatch($route);
-    }
+    app_dispatch(get_url(), $auto_dispatch);
     
     emit('router:post_dispatch');
+}
+
+/**
+ * Dispatch application's routes
+ * 
+ * @param string $url
+ */
+function app_dispatch ($url, $auto_dispatch) {
+    $method = array_get($_SERVER, 'REQUEST_METHOD', 'GET');
+    
+    if (
+        $auto_dispatch && auto_dispatch(get_url()) === false ||
+        dispatch(fetch_route($url, $method)) === false
+    ) {
+        not_found();
+    }
 }
 
 /**

@@ -4,6 +4,9 @@
  * HTTP routing (mostly)
  * 
  * @package mini_framework
+ * @require events
+ * @require storage
+ * @require loader
  */
 
 /**
@@ -144,7 +147,7 @@ function route_cleanup ($url) {
  */
 function fetch_route ($url, $method) {
     if (!$found = router_find($url, $method)) {
-        return not_found();
+        return false;
     }
     
     emit('router:found', $found['found'], $found['matches']);
@@ -155,11 +158,12 @@ function fetch_route ($url, $method) {
 /**
  * Dispatch routing
  * 
- * @param array $found
+ * @param array|bool $found
+ * @return mixed
  */
-function dispatch (array $found) {
+function dispatch ($found) {
     if (!$found) {
-        return not_found();
+        return false;
     }
     
     $route = $found['found'];
@@ -170,13 +174,14 @@ function dispatch (array $found) {
         load_php($route['action']['file']);
     }
     
-    invoke_action($route, $found['matches']);
+    return invoke_action($route, $found['matches']);
 }
 
 /**
  * Auto dispatch
  * 
  * @param string $url
+ * @return mixed
  */
 function auto_dispatch ($url) {
     $fragments = explode('/', $url);
@@ -192,10 +197,10 @@ function auto_dispatch ($url) {
         load_app_file("actions/$controller");
     }
     catch (Exception $e) {
-        return not_found();
+        return false;
     }
     
-    invoke_action($action, $fragments);
+    return invoke_action($action, $fragments);
 }
 
 /**
@@ -203,6 +208,7 @@ function auto_dispatch ($url) {
  * 
  * @param array $action
  * @param array $parameters
+ * @return mixed
  */
 function invoke_action (array $route, array $parameters) {
     $action = $route['action'];
@@ -210,17 +216,15 @@ function invoke_action (array $route, array $parameters) {
     
     if (is_string($action)) {
         if (function_exists('actions_init') && actions_init() === false) {
-            not_found();
+            return false;
         }
         
         if (!function_exists($action)) {
-            not_found();
+            return false;
         }
     }
     
-    if (call_user_func_array($action, $parameters) === false) {
-        not_found();
-    }
+    return call_user_func_array($action, $parameters);
 }
 
 /**
@@ -253,17 +257,6 @@ function get_baseurl ($base, $root) {
     $lenght = strlen($root);
 
     return $base === $root ? '' : trim(substr($base, $lenght), '/');
-}
-
-/**
- * Show page 404
- */
-function not_found () {
-    header("HTTP/1.1 404 Not Found");
-    
-    emit('router:not_found');
-    
-    view('404') xor exit;
 }
 
 /**

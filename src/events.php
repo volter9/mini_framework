@@ -4,6 +4,7 @@
  * Events functions
  * 
  * @package mini_framework
+ * @require storage
  */
 
 /**

@@ -4,6 +4,8 @@
  * View component
  * 
  * @package mini_framework
+ * @require storage
+ * @require string
  */
 
 /**
@@ -15,6 +17,7 @@
  */
 function views ($key = null, $value = null) {
     static $repo = null;
+    
     $repo or $repo = repo();
     
     return $repo($key, $value);
@@ -49,6 +52,17 @@ function view ($view, $data = array(), $global = true) {
     }
     
     render(view_path($view), empty($data) ? views('data') : $data);
+}
+
+/**
+ * Show page 404
+ */
+function not_found () {
+    header("HTTP/1.1 404 Not Found");
+    
+    emit('router:not_found');
+    
+    view('404') xor exit;
 }
 
 /**

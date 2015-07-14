@@ -4,6 +4,9 @@
  * Form building function
  * 
  * @package mini_blog
+ * @require view
+ * @require storage
+ * @require string
  */
 
 /**

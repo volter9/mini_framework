@@ -4,6 +4,7 @@
  * Pagination utilities
  * 
  * @package mini_framework
+ * @require database
  */
 
 /**

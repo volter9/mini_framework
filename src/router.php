@@ -75,6 +75,7 @@ function router_find ($url, $method) {
  */
 function route_process ($url) {
     static $symbols = null;
+    
     $symbols or $symbols = router('settings.symbols');
     
     $find    = array_keys($symbols);
@@ -191,7 +192,6 @@ function auto_dispatch ($url) {
     
     $action = array_shift($fragments);
     $action = $action ? $action : 'index';
-    $action = "action_{$action}";
     
     try {
         load_app_file("actions/$controller");
@@ -200,7 +200,11 @@ function auto_dispatch ($url) {
         return false;
     }
     
-    return invoke_action($action, $fragments);
+    $route = array(
+        'action' => array('name' => $action)
+    );
+    
+    return invoke_action($route, $fragments);
 }
 
 /**

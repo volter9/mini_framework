@@ -61,8 +61,8 @@ function load_api ($file, $ignore = false) {
  * 
  * @param array $files
  */
-function load_files (array $files) {
-    if (empty($files)) {
+function load_files ($files) {
+    if (empty($files) || !is_array($files)) {
         return false;
     }
     
@@ -87,9 +87,12 @@ function load_model ($model, $path = 'app/models') {
 
 /**
  * Load system dependencies
+ * 
+ * @param array $modules
  */
-function load_system () {
+function load_system ($modules = null) {
     $api = array('router', 'events', 'view', 'database', 'input', 'i18n');
+    $api = empty($modules) ? $api : $modules;
     
     foreach ($api as $script) {
         load_api($script);

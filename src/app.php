@@ -54,7 +54,7 @@ function app_dispatch ($url, $auto_dispatch) {
     
     if (
         $auto_dispatch && auto_dispatch(get_url()) === false ||
-        dispatch(fetch_route($url, $method)) === false
+        !$auto_dispatch && dispatch(fetch_route($url, $method)) === false
     ) {
         not_found();
     }
@@ -69,15 +69,18 @@ function app_dispatch ($url, $auto_dispatch) {
  * @param callable $config
  */
 function system_load ($config) {
-    load_system();
+    $root = array_get($_SERVER, 'DOCUMENT_ROOT', base_path());
     
-    router('settings', $config('routing'));
-    router('settings.root', get_baseurl(base_path(), $_SERVER['DOCUMENT_ROOT']));
+    load_system($config('autoload.modules'));
     
-    views('templates', $config('templates'));
-    lang('settings', $config('i18n'));
+    if (function_exists('router')) {
+        router('settings', $config('routing'));
+        router('settings.root', get_baseurl(base_path(), $root));
+    }
     
-    db($config('database'));
+    function_exists('views') and views('templates', $config('templates'));
+    function_exists('lang')  and lang('settings', $config('i18n'));
+    function_exists('db')    and db($config('database'));
     
     storage('validation', $config('validation'));
     storage('config', $config);

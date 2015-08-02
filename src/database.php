@@ -1,4 +1,9 @@
-<?php
+<?php namespace db;
+
+use Exception;
+use PDO;
+
+use storage;
 
 /**
  * Database functions
@@ -16,7 +21,8 @@
  */
 function db ($key = null, $value = null) {
     static $repo = null;
-    $repo or $repo = repo();
+    
+    $repo or $repo = storage\repo();
     
     return $repo($key, $value);
 }
@@ -26,7 +32,7 @@ function db ($key = null, $value = null) {
  * 
  * @param string
  */
-function db_connect ($group = 'default') {
+function connect ($group = 'default') {
     if (db("$group.connection")) {
         return;
     }
@@ -37,7 +43,7 @@ function db_connect ($group = 'default') {
         throw new Exception("Database group '$group' does not exists!");
     }
     
-    $db = db_create_connection($config);
+    $db = create_connection($config);
     
     db("$group.connection", $db);
     db('active', $db);
@@ -49,8 +55,11 @@ function db_connect ($group = 'default') {
  * @param array $config
  * @return \PDO
  */
-function db_create_connection ($config) {
-    $db = new PDO(db_build_dsn($config), $config['user'], $config['password']);
+function create_connection ($config) {
+    $user = array_get($config, 'user');
+    $pass = array_get($config, 'password');
+    
+    $db = new PDO(build_dsn($config), $user, $pass);
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     $db->setAttribute(PDO::ATTR_EMULATE_PREPARES, FALSE);
     $db->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
@@ -64,7 +73,7 @@ function db_create_connection ($config) {
  * @param array $config
  * @return string
  */
-function db_build_dsn (array $config) {
+function build_dsn (array $config) {
     if ($dsn = array_get($config, 'dsn')) {
         return $dsn;
     }
@@ -79,7 +88,6 @@ function db_build_dsn (array $config) {
     }
     
     $attributes = implode(';', $attributes);
-    
     $driver = array_get($config, 'driver', 'mysql');
     
     return "$driver:$attributes";
@@ -92,7 +100,7 @@ function db_build_dsn (array $config) {
  * @param string $query
  * @param array $data
  */
-function db_prepare_exception (Exception $e, $query, array $data) {
+function prepare_exception (Exception $e, $query, array $data) {
     $message = $e->getMessage();
     
     $query = preg_replace('/^\s+/m', '', $query);
@@ -121,8 +129,8 @@ function db_prepare_exception (Exception $e, $query, array $data) {
  * @param \PDO $pdo
  * @return array
  */
-function db_select ($query, array $data = array(), $one = false, PDO $pdo = null) {
-    $statement = db_prepare($query, $data, $pdo);
+function select ($query, array $data = array(), $one = false, PDO $pdo = null) {
+    $statement = prepare($query, $data, $pdo);
     
     $result = $one ? $statement->fetch() : $statement->fetchAll();
     
@@ -137,24 +145,17 @@ function db_select ($query, array $data = array(), $one = false, PDO $pdo = null
 * @param \PDO $pdo
  * @return int
  */
-function db_insert ($table, array $data, PDO $pdo = null) {
+function insert ($table, array $data, PDO $pdo = null) {
     if (!$table || empty($data)) {
         return 0;
     }
     
-    $query = 'INSERT INTO %s (%s) VALUES (%s)';
+    list($keys, $placeholders) = prepare_insert($data);
     
-    list($keys, $placeholders) = db_prepare_insert($data);
+    $query     = "INSERT INTO $table ($keys) VALUES ($placeholders)";
+    $statement = prepare($query, array_values($data), $pdo);
     
-    $statement = db_prepare(
-        sprintf($query, $table, $keys, $placeholders), 
-        array_values($data), 
-        $pdo
-    );
-    
-    if (!$pdo) {
-        $pdo = db('active');
-    }
+    $pdo = $pdo ? $pdo : db('active');
     
     return $statement->rowCount() ? $pdo->lastInsertId() : 0;
 }
@@ -165,21 +166,18 @@ function db_insert ($table, array $data, PDO $pdo = null) {
  * @param array $data
  * @return array
  */
-function db_prepare_insert (array $data) {
-    $keys = implode(',', 
-        array_map(function ($value) {           
-            return "`$value`";
-        }, array_keys($data))
-    );
+function prepare_insert (array $data) {
+    $keys = implode(',', array_map('\db\escape', array_keys($data)));
     
     $placeholders = chop(
         str_repeat('?,', count($data)), ','
     );
     
-    return array(
-        $keys,
-        $placeholders
-    );
+    return array($keys, $placeholders);
+}
+
+function escape ($value) {
+    return "`$value`";
 }
 
 /**
@@ -191,23 +189,21 @@ function db_prepare_insert (array $data) {
  * @param \PDO $pdo
  * @return bool
  */
-function db_update ($table, array $data, array $where = array(), PDO $pdo = null) {
+function update ($table, array $data, array $where = array(), PDO $pdo = null) {
     if (empty($data)) {
         return false;
     }
     
-    $query = "UPDATE $table SET %s %s";
-    $where = db_prepare_where($where);
-    
+    $where  = prepare_where($where);
     $values = array_merge(
         array_values($data), 
         array_values($where['data'])
     );
     
-    $update = db_prepare_update($data);
-    $statement = db_prepare(sprintf($query, $update, $where['query']), $values, $pdo);
+    $update = prepare_update($data);
+    $query  = "UPDATE $table SET $update {$where['query']}";
     
-    return $statement->rowCount() > 0;
+    return prepare($query, $values, $pdo)->rowCount() > 0;
 }
 
 /**
@@ -216,7 +212,7 @@ function db_update ($table, array $data, array $where = array(), PDO $pdo = null
  * @param array $data
  * @return string
  */
-function db_prepare_update (array $data) {
+function prepare_update (array $data) {
     $update = array();
     
     foreach ($data as $key => $value) {
@@ -234,11 +230,11 @@ function db_prepare_update (array $data) {
  * @param \PDO $pdo
  * @return bool
  */
-function db_delete ($table, array $where = array(), PDO $pdo = null) {
+function delete ($table, array $where = array(), PDO $pdo = null) {
     $query = "DELETE FROM `$table` %s";
-    $where = db_prepare_where($where);
+    $where = prepare_where($where);
     
-    $statement = db_prepare(sprintf($query, $where['query']), $where['data'], $pdo);
+    $statement = prepare(sprintf($query, $where['query']), $where['data'], $pdo);
     
     return $statement->rowCount() > 0;
 }
@@ -250,7 +246,7 @@ function db_delete ($table, array $where = array(), PDO $pdo = null) {
  * @param array $where
  * @return array
  */
-function db_prepare_where (array $where = array()) {
+function prepare_where (array $where = array()) {
     if (empty($where)) {
         return array('query' => '', 'data' => $where);
     }
@@ -258,22 +254,22 @@ function db_prepare_where (array $where = array()) {
     $query = 'WHERE ';
     
     foreach (array_keys($where) as $field) {
-        $query .= db_prepare_where_field($field);
+        $query .= prepare_where_field($field);
     }
     
     return array(
         'query' => trim(chop($query, 'AND OR')),
-        'data' => array_values($where)
+        'data'  => array_values($where)
     );
 }
 
 /**
- * Utility function for db_prepare_where
+ * Utility function for prepare_where
  * 
  * @param string $field
  * @return string
  */
-function db_prepare_where_field ($field) {
+function prepare_where_field ($field) {
     $condition = 'AND';
     
     if (strpos($field, '|') !== false) {
@@ -296,7 +292,7 @@ function db_prepare_where_field ($field) {
  * @param \PDO $pdo
  * @return \PDOStatement
  */
-function db_prepare ($query, array $parameters, PDO $pdo = null) {
+function prepare ($query, array $parameters, PDO $pdo = null) {
     $pdo = $pdo ? $pdo : db('active');
     
     try {
@@ -304,7 +300,7 @@ function db_prepare ($query, array $parameters, PDO $pdo = null) {
         $statement->execute($parameters); 
     }
     catch (PDOException $e) {
-        db_prepare_exception($e, $query, $parameters);
+        prepare_exception($e, $query, $parameters);
     }
     
     return $statement;
@@ -317,7 +313,7 @@ function db_prepare ($query, array $parameters, PDO $pdo = null) {
  * @param \PDO $pdo
  * @return int|bool
  */
-function db_query ($query, PDO $pdo = null) {
+function query ($query, PDO $pdo = null) {
     $pdo = $pdo ? $pdo : db('active');
     
     return $pdo->exec($query);

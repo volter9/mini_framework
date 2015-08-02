@@ -1,4 +1,6 @@
-<?php
+<?php namespace events;
+
+use storage;
 
 /**
  * Events functions
@@ -13,9 +15,9 @@
  * @param string $event
  * @param callable $callback
  */
-function events ($event, $callback = null) {
+function storage ($event, $callback = null) {
     static $stack = null;
-    $stack or $stack = stack();
+    $stack or $stack = storage\stack();
     
     return $stack($event, $callback);
 }
@@ -27,7 +29,7 @@ function events ($event, $callback = null) {
  * @param callable $callback
  */
 function bind ($event, $callback) {
-    events($event, $callback);
+    storage($event, $callback);
 }
 
 /**
@@ -38,7 +40,7 @@ function bind ($event, $callback) {
  */
 function emit ($event) {
     $args  = array_slice(func_get_args(), 1);
-    $event = events($event);
+    $event = storage($event);
     
     if (empty($event)) {
         return false;

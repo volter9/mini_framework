@@ -1,7 +1,12 @@
-<?php
+<?php namespace router;
+
+use app;
+use events;
+use loader;
+use storage;
 
 /**
- * HTTP routing (mostly)
+ * HTTP routing and URL generation (mostly)
  * 
  * @package mini_framework
  * @require events
@@ -16,10 +21,10 @@
  * @param mixed $value
  * @return mixed
  */
-function router ($key = null, $value = null) {
+function storage ($key = null, $value = null) {
     static $repo = null;
     
-    $repo or $repo = repo(array(
+    $repo or $repo = storage\repo(array(
         'routes' => array()
     ));
     
@@ -32,10 +37,10 @@ function router ($key = null, $value = null) {
  * @param string $url
  * @param string $action
  */
-function route ($url, $action) {
-    $route = parse_route($url, $action);
+function map ($url, $action) {
+    $route = parse($url, $action);
     
-    router("routes.{$route['id']}", $route);
+    storage("routes.{$route['id']}", $route);
 }
 
 /**
@@ -45,11 +50,11 @@ function route ($url, $action) {
  * @param string $method
  * @return array|bool
  */
-function router_find ($url, $method) {
-    $routes = router('routes');
+function find ($url, $method) {
+    $routes = storage('routes');
     
     foreach ($routes as $found) {
-        $routeUrl = route_process($found['url']);
+        $routeUrl = process($found['url']);
         $pattern  = "#^{$routeUrl}\$#i";
         
         $correct_method = in_array($found['method'], array('*', $method));
@@ -73,10 +78,13 @@ function router_find ($url, $method) {
  * @param string $url
  * @return string
  */
-function route_process ($url) {
+function process ($url) {
     static $symbols = null;
     
-    $symbols or $symbols = router('settings.symbols');
+    if (!$symbols) {
+        $symbols = storage('settings.symbols');
+        $symbols or $symbols = array();
+    }
     
     $find    = array_keys($symbols);
     $replace = array_values($symbols);
@@ -91,7 +99,7 @@ function route_process ($url) {
  * @param string $action
  * @return array
  */
-function parse_route ($url, $action) {
+function parse ($url, $action) {
     $name = 'index';
     $file = $action;
     
@@ -116,7 +124,7 @@ function parse_route ($url, $action) {
  * @param string $url
  * @param array $params
  */
-function route_replace ($url, array $params) {
+function replace ($url, array $params) {
     $regex = '/:(\w+)\??/';
     
     if (count($params)) {
@@ -126,7 +134,7 @@ function route_replace ($url, array $params) {
         $params = '';
     }
     
-    return route_cleanup(trim(preg_replace($regex, $params, $url, 1), '/ '));
+    return cleanup(trim(preg_replace($regex, $params, $url, 1), '/ '));
 }
 
 /**
@@ -135,7 +143,7 @@ function route_replace ($url, array $params) {
  * @param string $url
  * @return string
  */
-function route_cleanup ($url) {
+function cleanup ($url) {
     return chop(preg_replace('/:(\w+)\??/', '', $url), '/ ');
 };
 
@@ -146,12 +154,12 @@ function route_cleanup ($url) {
  * @param string $method
  * @return array
  */
-function fetch_route ($url, $method) {
-    if (!$found = router_find($url, $method)) {
+function fetch ($url, $method) {
+    if (!$found = find($url, $method)) {
         return false;
     }
     
-    emit('router:found', $found['found'], $found['matches']);
+    events\emit('router:found', $found['found'], $found['matches']);
     
     return $found;
 }
@@ -169,13 +177,13 @@ function dispatch ($found) {
     
     $route = $found['found'];
     
-    router('route', $found);
+    storage('route', $found);
     
     if (!is_callable($route['action'])) {
-        load_php($route['action']['file']);
+        loader\php($route['action']['file']);
     }
     
-    return invoke_action($route, $found['matches']);
+    return invoke($route, $found['matches']);
 }
 
 /**
@@ -194,17 +202,15 @@ function auto_dispatch ($url) {
     $action = $action ? $action : 'index';
     
     try {
-        load_app_file("actions/$controller");
+        loader\app_file("actions/$controller");
     }
     catch (Exception $e) {
         return false;
     }
     
-    $route = array(
-        'action' => array('name' => $action)
-    );
+    $route = array('action' => array('name' => $action));
     
-    return invoke_action($route, $fragments);
+    return invoke($route, $fragments);
 }
 
 /**
@@ -214,12 +220,20 @@ function auto_dispatch ($url) {
  * @param array $parameters
  * @return mixed
  */
-function invoke_action (array $route, array $parameters) {
+function invoke (array $route, array $parameters) {
     $action = $route['action'];
-    $action = is_callable($action) ? $action : "action_{$action['name']}";
+    
+    if (!is_callable($action)) {
+        $path = exclude($action['file'], app\base_path());
+        $path = str_replace('/', '\\', $path);
+        
+        $action = "$path\\{$action['name']}";
+    }
     
     if (is_string($action)) {
-        if (function_exists('actions_init') && actions_init() === false) {
+        $init = "$path\\init";
+        
+        if (function_exists($init) && $init() === false) {
             return false;
         }
         
@@ -237,7 +251,7 @@ function invoke_action (array $route, array $parameters) {
  * @return string
  */
 function get_url () {
-    $root = router('settings.root');
+    $root = storage('settings.root');
     $url  = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
     
     if ($root && strpos($url, $root) !== false) {
@@ -255,7 +269,7 @@ function get_url () {
  * @param string $root
  * @return string
  */
-function get_baseurl ($base, $root) {
+function base_url ($base, $root) {
     $base   = trim($base, '/');
     $root   = trim($root, '/');
     $lenght = strlen($root);
@@ -272,17 +286,17 @@ function get_baseurl ($base, $root) {
  * @return string|bool
  */
 function url ($id, $params = array(), $absolute = false) {
-    if (!$route = router("routes.$id")) {
+    if (!$route = storage("routes.$id")) {
         return false;
     }
     
-    $base = router('settings.base_url');    
-    $root = router('settings.root');
+    $base = storage('settings.base_url');    
+    $root = storage('settings.root');
     $root = $root ? $root : '';
 
     $basepath = $absolute ? "{$base}$root/" : chop("/$root", '/');
     
-    $url = route_replace($route['url'], $params);
+    $url = replace($route['url'], $params);
     
     return "$basepath/$url";
 }
@@ -293,7 +307,7 @@ function url ($id, $params = array(), $absolute = false) {
  * @param string $path
  */
 function path ($path = '') {
-    $root = router('settings.root');
+    $root = storage('settings.root');
     $root = $root ? $root : '';
     
     $basepath = chop("/$root", '/'); 
@@ -305,25 +319,32 @@ function path ($path = '') {
  * Redirect to route
  * 
  * @see url
+ * @see redirect_path
  */
-function redirect ($id, $params = array()) {
-    redirect_path(url($id, $params));
+function redirect ($id, $params = array(), $exit = true) {
+    redirect_path(url($id, $params), $exit);
 }
 
 /**
  * Redirect to URL relative to the website location
  * 
  * @see path
+ * @see redirect_path
  */
-function redirect_url ($url) {
-    redirect_path(path($url));
+function redirect_url ($url, $exit = true) {
+    redirect_path(path($url, $exit));
 }
 
 /**
  * Redirect to path
  * 
  * @param string $path
+ * @param bool $exit
  */
-function redirect_path ($path) {
-    header("Location: $path") xor exit;
+function redirect_path ($path, $exit = true) {
+    header("Location: $path");
+    
+    if ($exit) {
+        exit;
+    }
 }

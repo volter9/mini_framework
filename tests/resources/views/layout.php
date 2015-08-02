@@ -1,0 +1,1 @@
+<sarcasm><?php view\view($view) ?></sarcasm>

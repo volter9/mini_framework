@@ -6,5 +6,9 @@
 	
 	"autoload": {
 		"files": ["src/app.php"]
+	},
+	
+	"require-dev": {
+	    "phpunit/phpunit": "4.*"
 	}
 }

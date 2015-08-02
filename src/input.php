@@ -1,4 +1,4 @@
-<?php
+<?php namespace input;
 
 /**
  * Input functions (session and get/post values)
@@ -23,8 +23,8 @@ function session ($key = null, $value = null) {
         unset($_SESSION[$key]);
     }
     
-    if ($key && !$value && isset($_SESSION[$key])) {
-        return $_SESSION[$key];
+    if ($key && !$value) {
+        return isset($_SESSION[$key]) ? $_SESSION[$key] : false;
     }
     
     return $_SESSION;
@@ -37,7 +37,7 @@ function session ($key = null, $value = null) {
  * @param bool $sanitize
  * @return array
  */
-function input ($key = null, $sanitize = false) {
+function get ($key = null, $sanitize = false) {
     $array = get_array();
     $value = false;
     
@@ -90,7 +90,7 @@ function is_post () {
  * @return bool
  */
 function is_ajax () {
-    return strtolower(array_get($_SERVER, 'HTTP_X_REQUEST_WITH')) === 'xmlhttprequest';
+    return strtolower(array_get($_SERVER, 'HTTP_X_REQUESTED_WITH')) === 'xmlhttprequest';
 }
 
 /**

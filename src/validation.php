@@ -1,4 +1,7 @@
-<?php
+<?php namespace validation;
+
+use loader;
+use storage;
 
 /**
  * Data validation
@@ -15,9 +18,10 @@
  * @param mixed $value
  * @return mixed
  */
-function validation ($key = null, $value = null) {
+function storage ($key = null, $value = null) {
     static $repo;
-    $repo or $repo = repo();
+    
+    $repo or $repo = storage\repo();
     
     return $repo($key, $value);
 }
@@ -29,18 +33,18 @@ function validation ($key = null, $value = null) {
  * @param array $messages
  * @param array $validators
  */
-function validation_init (array $fields, array $messages, array $validators = array()) {
-    $path = storage('validation.validators');
+function init (array $fields, array $messages, array $validators = array()) {
+    $path = storage\shared('validation.validators');
     
-    $validators = $validators ? $validators : load_app_file($path, true);
+    $validators = $validators ? $validators : loader\app_file($path, true);
     
     if (empty($validators)) {
         throw new Exception('There is no validators found!');
     }
     
     validators($validators);
-    validation_fields($fields);
-    validators_messages($messages);
+    fields($fields);
+    messages($messages);
 }
 
 /**
@@ -49,7 +53,7 @@ function validation_init (array $fields, array $messages, array $validators = ar
  * @param array $validators
  */
 function validators (array $validators) {
-    validation('validators', $validators);
+    storage('validators', $validators);
 }
 
 /**
@@ -57,8 +61,8 @@ function validators (array $validators) {
  * 
  * @param array $messages
  */
-function validators_messages (array $messages) {
-    validation('messages', $messages);
+function messages (array $messages) {
+    storage('messages', $messages);
 }
 
 /**
@@ -66,8 +70,8 @@ function validators_messages (array $messages) {
  * 
  * @param array $fields
  */
-function validation_fields (array $fields) {
-    validation('fields', $fields);
+function fields (array $fields) {
+    storage('fields', $fields);
 }
 
 /**
@@ -77,12 +81,12 @@ function validation_fields (array $fields) {
  * @param Closure $validator
  * @param string|Closure $message
  */
-function add_validator ($name, Closure $validator, $message) {
+function add ($name, Closure $validator, $message) {
     validators(array(
         $name => $validator
     ));
     
-    validators_messages(array(
+    messages(array(
         $name => $message
     ));
 }
@@ -92,27 +96,33 @@ function add_validator ($name, Closure $validator, $message) {
  * 
  * @param array $data
  * @param array $rules
+ * @param bool $halt
  * @return bool
  */
-function validate (array $data, array $rules) {
+function validate (array $data, array $rules, $halt = false) {
     if (!$rules) {
-        throw new Exception(
-            'Validation rules were not initialized!'
-        );
+        throw new Exception('Validation rules were not initialized!');
     }
     
     $errors = array();
     
-    foreach ($rules as $field => $set) {
+    foreach ($rules as $field => $rules) {
         $value = array_get($data, $field, null);
-        $error = validate_field($field, $value, $set, $data);
+        $error = validate_field($rules, $value, $data);
         
-        if (is_string($error)) {
-            $errors[$field] = $error;
+        if ($error !== true) {
+            list($name, $params) = $error;
+            
+            $errors[$field] = format_error($name, $field, $params);
+            
+            if ($halt) {
+                break;
+            }
         }
     }
     
-    validation('errors', $errors);
+    storage('errors', 42);
+    storage('errors', $errors);
     
     return empty($errors);
 }
@@ -122,19 +132,16 @@ function validate (array $data, array $rules) {
  * 
  * @todo This function is **too** long
  *       You need to break down it into smaller functions
- * @param string $field
- * @param mixed $value
  * @param string $rules
+ * @param mixed $value
  * @param array $data
  * @return bool|array
  */
-function validate_field ($field, $value, $rules, array $data) {
-    $error = null;
-    
+function validate_field ($rules, $value, array $data = array()) {
     foreach (parse_rules($rules) as $rule) {
         $name      = $rule['validator'];
         $params    = $rule['params'];
-        $validator = validation("validators.$name");
+        $validator = storage("validators.$name");
         
         if (!$validator) {
             throw new Exception(
@@ -145,25 +152,32 @@ function validate_field ($field, $value, $rules, array $data) {
         $validator_params = array_merge(array($value, $data), $params);
         $result = (bool)call_user_func_array($validator, $validator_params);
         
-        if ($result) {
-            continue;
+        if (!$result) {
+            return array($name, $params);
         }
-        
-        $message = validation("messages.$name");
-        $string  = is_string($message);
-        
-        array_unshift($params, validation("fields.$field"));
-        
-        if ($string) {
-            array_unshift($params, $message);
-        }
-        
-        $error = call_user_func_array($string ? 'sprintf' : $message, $params);
-        
-        break;
     }
     
-    return $error;
+    return true;
+}
+
+/**
+ * Format the error
+ * 
+ * @param string $name
+ * @param array $params
+ * @return string
+ */
+function format_error ($name, $field, $params) {
+    $message = storage("messages.$name");
+    $string  = is_string($message);
+    
+    array_unshift($params, storage("fields.$field"));
+    
+    if ($string) {
+        array_unshift($params, $message);
+    }
+    
+    return call_user_func_array($string ? 'sprintf' : $message, $params);
 }
 
 /**
@@ -210,8 +224,8 @@ function parse_rule ($rule) {
  * @param bool $string
  * @return array|string
  */
-function validation_errors ($string = false) {
-    if (!$errors = validation('errors')) {
+function errors ($string = false) {
+    if (!$errors = storage('errors')) {
         return array();
     }
     

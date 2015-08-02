@@ -1,4 +1,10 @@
-<?php
+<?php namespace view;
+
+use events;
+use storage;
+use router;
+
+use Exception;
 
 /**
  * View component
@@ -15,10 +21,10 @@
  * @param mixed $value
  * @return mixed
  */
-function views ($key = null, $value = null) {
+function storage ($key = null, $value = null) {
     static $repo = null;
     
-    $repo or $repo = repo();
+    $repo or $repo = storage\repo();
     
     return $repo($key, $value);
 }
@@ -33,10 +39,10 @@ function layout ($view, array $data = array()) {
     $data['view'] = $view;
     
     if (!empty($data)) {
-        views('data', $data);
+        storage('data', $data);
     }
     
-    render(view_path(views('templates.layout')), $data);
+    render(path(storage('settings.layout')), $data);
 }
 
 /**
@@ -48,10 +54,10 @@ function layout ($view, array $data = array()) {
  */
 function view ($view, $data = array(), $global = true) {
     if ($global) {
-        views('data', $data);
+        storage('data', $data);
     }
     
-    render(view_path($view), empty($data) ? views('data') : $data);
+    render(path($view), empty($data) ? storage('data') : $data);
 }
 
 /**
@@ -60,7 +66,7 @@ function view ($view, $data = array(), $global = true) {
 function not_found () {
     header("HTTP/1.1 404 Not Found");
     
-    emit('router:not_found');
+    events\emit('router:not_found');
     
     view('404') xor exit;
 }
@@ -82,7 +88,7 @@ function render ($__view__, array $__data__) {
  * 
  * @param Exception $exception
  */
-function show_error (Exception $exception) {
+function error (Exception $exception) {
     $data = array('exception' => $exception);
     
     view('error', $data) xor exit;
@@ -98,8 +104,8 @@ function parse_template ($template) {
     $contains = contains($template, ':');
     
     return array( 
-        $contains ? before($template, ':') : views('templates.template'),
-        $contains ? after($template, ':') : $template
+        $contains ? before($template, ':') : storage('settings.template'),
+        $contains ? after($template,  ':') : $template
     );
 }
 
@@ -109,16 +115,16 @@ function parse_template ($template) {
  * @param string $view
  * @return string
  */
-function view_path ($view) {
+function path ($view) {
     if (starts_with($view, '/')) {
         return "$view.php";
     }
     
-    $directory = chop(views('templates.directory'), '/');
+    $directory = chop(storage('settings.directory'), '/');
     
     list($template, $view) = parse_template($view);
     
-    return "$directory/$template/html/$view.php";
+    return $template ? "$directory/$template/html/$view.php" : "$directory/$view.php";
 }
 
 /**
@@ -130,10 +136,10 @@ function view_path ($view) {
 function asset_url ($file = '') {
     list($template, $file) = parse_template($file);
     
-    $folder = chop(views('templates.directory'), '/');
+    $folder = chop(storage('settings.directory'), '/');
     $folder = after($folder, '/');
     
-    $root = router('settings.root');
+    $root = router\storage('settings.root');
     
     return deduplicate("/$root/$folder/$template/$file", '/');
 }
@@ -146,7 +152,22 @@ function asset_url ($file = '') {
  */
 function asset_path ($file = '') {
     list($template, $file) = parse_template($file);
-    $directory = views('templates.directory');
+    
+    $directory = storage('settings.directory');
     
     return "$directory/$template/$file";
+}
+
+/**
+ * Capture given callback's output
+ * 
+ * @param callable $callback
+ * @return string
+ */
+function capture ($callback) {
+    ob_start();
+    
+    $callback();
+    
+    return ob_get_clean();
 }

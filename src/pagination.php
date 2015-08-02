@@ -1,4 +1,6 @@
-<?php
+<?php namespace pagination;
+
+use db;
 
 /**
  * Pagination utilities
@@ -35,9 +37,10 @@ function limited_range ($center, $limit, $min, $max) {
         return array();
     }
     
-    $half  = ceil($limit / 2);
+    $half = ceil($limit / 2);
+    
     $start = (int)clamp($center - $half, $min, $max);
-    $end   = (int)clamp($center + $half, $min, $max);
+    $end   = (int)clamp($start + $limit - ($limit % 2), $min, $max);
     $range = range($start, $end);
     
     array_splice($range,  0, 1, (int)$min);
@@ -52,18 +55,18 @@ function limited_range ($center, $limit, $min, $max) {
  * @param int $total - Total of rows/items
  * @param int $items - Items per page
  * @param int $page  - Page
+ * @param int $limit - Show pages limit
  * @return array
  */
-function pagination_generate ($total, $items, $page) {
+function generate ($total, $items, $page, $limit = 9) {
     $offset = ($page - 1) * $items;
     
-    $pages = ceil($total / $items);
+    $pages = (int)ceil($total / $items);
     $page  = clamp($page, 1, $pages);
     
-    $limit = clamp($pages, 1, 9);
     $pagination = limited_range($page, $limit, 1, $pages);
     
-    $limit = intval($items - $offset % $items);
+    $limit = $items;
     
     return compact('offset', 'pages', 'page', 'pagination', 'limit');
 }
@@ -81,16 +84,15 @@ function paginate_query ($query, array $data, $limit, $page) {
     $countQuery = paginate_query_replace_select($query);
     $countQuery = pagiante_query_remove_joins($countQuery);
     
-    $count = current(db_select($countQuery, $data, true));
+    $count = current(db\select($countQuery, $data, true));
     
-    $pages = pagination_generate($count, $limit, $page);
-    $query .= ' LIMIT ? OFFSET ?';
+    $pages = generate($count, $limit, $page);
     
     $data[] = $pages['limit'];
     $data[] = $pages['offset'];
     
     return array(
-        'items' => db_select($query, $data),
+        'items' => db\select("$query LIMIT ? OFFSET ?", $data),
         'pages' => $pages,
     );
 }
@@ -115,7 +117,7 @@ function paginate_query_replace_select ($query) {
  * @return string
  */
 function pagiante_query_remove_joins ($query) {
-    static $regex = '/(left|inner|outer|right) join [\w\d\s]+ ON \([^\)]+\)/i';
+    static $regex = '/(left|inner|outer|right) join [\w\d\s`]+ ON \([^\)]+\)/i';
     
     return preg_replace($regex, ' ', $query);
 }

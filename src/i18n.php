@@ -1,4 +1,7 @@
-<?php
+<?php namespace i18n;
+
+use loader;
+use storage;
 
 /**
  * Internatinalization (aka i18n) functions
@@ -17,7 +20,7 @@
  */
 function lang ($key = null, $value = null) {
     static $repo = null;
-    $repo or $repo = repo();
+    $repo or $repo = storage\repo();
     
     return $repo($key, $value);
 }
@@ -31,7 +34,7 @@ function lang ($key = null, $value = null) {
 function load_language ($lang, $path) {
     $default = lang('settings.default');
     
-    lang($lang, load_php("$path/$default"));
+    lang($lang, loader\php("$path/$default"));
     
     if (!lang('current')) {
         lang('current', $lang);
@@ -44,7 +47,7 @@ function load_language ($lang, $path) {
  * @param string $string
  * @return string
  */
-function i18n ($string) {
+function get ($string) {
     $language = lang('current');
     
     return lang("$language.$string");

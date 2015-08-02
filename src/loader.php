@@ -1,4 +1,8 @@
-<?php
+<?php namespace loader;
+
+use app;
+
+use Exception;
 
 /**
  * mini_framework loader functions
@@ -15,7 +19,7 @@
  * @param bool $ignore
  * @param string $ext
  */
-function load_php ($file, $ignore = false, $ext = '.php') {
+function php ($file, $ignore = false, $ext = '.php') {
     static $loads = array();
     
     if (ends_with($file, $ext)) {
@@ -25,7 +29,7 @@ function load_php ($file, $ignore = false, $ext = '.php') {
     $filepath = $file . $ext;
     $exists   = file_exists($filepath);
     
-    if ($exists && !isset($loads[$file]) || $ignore) {
+    if ($exists && (!isset($loads[$file]) || $ignore)) {
         $loads[$file] = true;
         
         return require $filepath;
@@ -41,8 +45,8 @@ function load_php ($file, $ignore = false, $ext = '.php') {
  * @param bool $ignore
  * @return mixed
  */
-function load_app_file ($file, $ignore = false) {
-    return load_php(app_path($file), $ignore);
+function app_file ($file, $ignore = false) {
+    return php(app\app_path($file), $ignore);
 }
 
 /**
@@ -52,8 +56,8 @@ function load_app_file ($file, $ignore = false) {
  * @param bool $ignore
  * @return mixed
  */
-function load_api ($file, $ignore = false) {
-    return load_php(api_path($file), $ignore);
+function api ($file, $ignore = false) {
+    return php(app\api_path($file), $ignore);
 }
 
 /**
@@ -61,13 +65,13 @@ function load_api ($file, $ignore = false) {
  * 
  * @param array $files
  */
-function load_files ($files) {
+function files ($files) {
     if (empty($files) || !is_array($files)) {
         return false;
     }
     
     foreach ($files as $file) {
-        load_php($file);
+        php($file);
     }
 }
 
@@ -77,9 +81,9 @@ function load_files ($files) {
  * @param string $model
  * @param string $path
  */
-function load_model ($model, $path = 'app/models') {
-    if (file_exists(base_path("$path/$model.php"))) {
-        load_php("$path/$model");
+function model ($model, $path = 'app/models') {
+    if (file_exists(app\base_path("$path/$model.php"))) {
+        php("$path/$model");
         
         function_exists($model = "{$model}_init") and $model();
     }
@@ -90,11 +94,11 @@ function load_model ($model, $path = 'app/models') {
  * 
  * @param array $modules
  */
-function load_system ($modules = null) {
+function system ($modules = null) {
     $api = array('router', 'events', 'view', 'database', 'input', 'i18n');
     $api = empty($modules) ? $api : $modules;
     
     foreach ($api as $script) {
-        load_api($script);
+        api($script);
     }
 }

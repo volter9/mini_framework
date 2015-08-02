@@ -1,4 +1,6 @@
-<?php
+<?php namespace storage;
+
+use loader;
 
 /**
  * Storage closures
@@ -47,11 +49,10 @@ function repo (array $repo = array(), $readonly = false) {
 /**
  * Stack storage
  * 
+ * @param array $repo
  * @return \Closure
  */
-function stack () {
-    $repo = array();
-    
+function stack (array $repo = array()) {
     /**
      * Stack callback
      * 
@@ -115,11 +116,11 @@ function box (array $repo = array()) {
  * @return callable
  */
 function config ($file) { 
-    return repo(load_php($file, true), true);
+    return repo(loader\php($file, true), true);
 }
 
 /**
- * Global storage
+ * Global shared storage
  * 
  * In this function you can store any information you want
  * 
@@ -127,7 +128,7 @@ function config ($file) {
  * @param mixed $value
  * @return mixed
  */
-function storage ($key = null, $value = null) {
+function shared ($key = null, $value = null) {
     static $repo = null;
     
     $repo or $repo = repo();

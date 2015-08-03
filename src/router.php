@@ -258,10 +258,11 @@ function invoke (array $route, array $parameters) {
     $action = $route['action'];
     
     if (!is_callable($action)) {
-        $path = exclude($action['file'], app\base_path());
-        $path = str_replace('/', '\\', $path);
+        $name = $action['name'];
+        $file = $action['file'];
+        $path = str_replace('/', '\\', exclude($file, app\base_path()));
         
-        $action = "$path\\{$action['name']}";
+        $action = starts_with($name, '\\') ? $name : "\\$path\\$name";
     }
     
     if (is_string($action)) {

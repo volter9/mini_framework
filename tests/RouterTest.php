@@ -40,8 +40,25 @@ class RouterTest extends TestCase {
                     'name' => 'page'
                 )
             ),
+            array(
+                'actions/abc:\cool\page',
+                array(
+                    'file' => 'actions/abc',
+                    'name' => '\cool\page'
+                )
+            ),
             array('is_int', 'is_int'),
             array($action, $action)
+        );
+    }
+    
+    public function routes () {
+        return array(
+            array('', 'GET'),
+            array('home', 'GET'),
+            array('page/1', 'GET'),
+            array('friends', 'GET'),
+            array('posts', 'GET')
         );
     }
     
@@ -57,23 +74,27 @@ class RouterTest extends TestCase {
         router\map('GET home /home/', $callback);
         router\map('GET page /page/:num', $callback);
         
-        $this->assertCount(3, router\storage('routes'));
+        router\map(
+            'GET friends /friends/', 
+            app\app_path('resources/actions/friends:index')
+        );
+        
+        router\map(
+            'GET posts /posts/', 
+            app\app_path('resources/actions/posts:\posts\actions\index')
+        );
+        
+        $this->assertCount(5, router\storage('routes'));
     }
     
     /**
      * Test dispatching routes
+     * 
+     * @dataProvider routes
      */
-    public function testDispatchingRoutes () {
+    public function testDispatchingRoutes ($url, $method) {
         $this->assertTrue(router\dispatch(
-            router\find('home', 'GET')
-        ));
-        
-        $this->assertTrue(router\dispatch(
-            router\find('', 'GET')
-        ));
-        
-        $this->assertTrue(router\dispatch(
-            router\find('page/1', 'GET')
+            router\find($url, $method)
         ));
     }
     

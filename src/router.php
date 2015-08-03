@@ -100,22 +100,56 @@ function process ($url) {
  * @return array
  */
 function parse ($url, $action) {
+    list($method, $id, $url) = parse_url($url);
+    
+    $url = trim($url, '/ ');
+    $action = parse_action($action);
+    
+    return compact('method', 'id', 'url', 'action');
+}
+
+/**
+ * Parse the passed URL in router\map function
+ * 
+ * @param string $url
+ * @return array
+ */
+function parse_url ($url) {
+    $fragments = explode(' ', $url);
+    $count     = count($fragments);
+    
+    if ($count === 2) {
+        array_splice($fragments, 1, 0, '-1');
+    }
+    else if ($count === 1) {
+        $id = substr(md5(microtime()), 0, 6);
+        
+        array_unshift($fragments, '-1');
+        array_unshift($fragments, '*');
+    }
+    
+    return $fragments;
+}
+
+/**
+ * Parse the passed action in router\map function
+ * 
+ * @param string $action
+ * @return array|string
+ */
+function parse_action ($action) {
+    if (is_callable($action)) {
+        return $action;
+    }
+    
     $name = 'index';
     $file = $action;
     
-    list($method, $id, $url) = explode(' ', $url);
-    
-    if (is_string($action)) {
-        if (strpos($action, ':') !== false) {
-            list($file, $name) = explode(':', $action);
-        }
-        
-        $action = compact('file', 'name');
+    if (strpos($action, ':') !== false) {
+        list($file, $name) = explode(':', $action);
     }
     
-    $url = trim($url, '/ ');
-    
-    return compact('method', 'id', 'url', 'action');
+    return compact('file', 'name');
 }
 
 /**
@@ -252,7 +286,7 @@ function invoke (array $route, array $parameters) {
  */
 function get_url () {
     $root = storage('settings.root');
-    $url  = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+    $url  = \parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
     
     if ($root && strpos($url, $root) !== false) {
         $url = explode($root, $url);

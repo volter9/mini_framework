@@ -26,7 +26,6 @@ return array(
      */
     'templates' => array(
         'directory' => app\base_path('resources/views'),
-        'template'  => 'default',
         'layout'    => 'layout'
     ),
     

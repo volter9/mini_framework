@@ -3,6 +3,9 @@
 use loader;
 use storage;
 
+use Closure;
+use Exception;
+
 /**
  * Data validation
  * 
@@ -33,7 +36,7 @@ function storage ($key = null, $value = null) {
  * @param array $messages
  * @param array $validators
  */
-function init (array $fields, array $messages, array $validators = array()) {
+function init (array $validators = array()) {
     $path = storage\shared('validation.validators');
     
     $validators = $validators ? $validators : loader\app_file($path, true);
@@ -42,36 +45,7 @@ function init (array $fields, array $messages, array $validators = array()) {
         throw new Exception('There is no validators found!');
     }
     
-    validators($validators);
-    fields($fields);
-    messages($messages);
-}
-
-/**
- * Set validators callbacks
- * 
- * @param array $validators
- */
-function validators (array $validators) {
     storage('validators', $validators);
-}
-
-/**
- * Set validators error messages
- * 
- * @param array $messages
- */
-function messages (array $messages) {
-    storage('messages', $messages);
-}
-
-/**
- * Set validation fields
- * 
- * @param array $fields
- */
-function fields (array $fields) {
-    storage('fields', $fields);
 }
 
 /**
@@ -81,13 +55,9 @@ function fields (array $fields) {
  * @param Closure $validator
  * @param string|Closure $message
  */
-function add ($name, Closure $validator, $message) {
-    validators(array(
+function add ($name, Closure $validator) {
+    storage('validators', array(
         $name => $validator
-    ));
-    
-    messages(array(
-        $name => $message
     ));
 }
 
@@ -111,9 +81,7 @@ function validate (array $data, array $rules, $halt = false) {
         $error = validate_field($rules, $value, $data);
         
         if ($error !== true) {
-            list($name, $params) = $error;
-            
-            $errors[$field] = format_error($name, $field, $params);
+            $errors[$field] = $error;
             
             if ($halt) {
                 break;
@@ -138,9 +106,7 @@ function validate (array $data, array $rules, $halt = false) {
  * @return bool|array
  */
 function validate_field ($rules, $value, array $data = array()) {
-    foreach (parse_rules($rules) as $rule) {
-        $name      = $rule['validator'];
-        $params    = $rule['params'];
+    foreach (parse_rules($rules) as $name => $params) {
         $validator = storage("validators.$name");
         
         if (!$validator) {
@@ -161,26 +127,6 @@ function validate_field ($rules, $value, array $data = array()) {
 }
 
 /**
- * Format the error
- * 
- * @param string $name
- * @param array $params
- * @return string
- */
-function format_error ($name, $field, $params) {
-    $message = storage("messages.$name");
-    $string  = is_string($message);
-    
-    array_unshift($params, storage("fields.$field"));
-    
-    if ($string) {
-        array_unshift($params, $message);
-    }
-    
-    return call_user_func_array($string ? 'sprintf' : $message, $params);
-}
-
-/**
  * Parse rule set
  * 
  * @param string $rules
@@ -197,10 +143,7 @@ function parse_rules ($rules) {
             list($validator, $params) = parse_rule($validator);
         }
         
-        $result[] = array(
-            'validator' => $validator,
-            'params'    => $params
-        );
+        $result[$validator] = $params;
     }
     
     return $result;
@@ -222,12 +165,12 @@ function parse_rule ($rule) {
  * Get validation errors
  * 
  * @param bool $string
- * @return array|string
+ * @return array
  */
-function errors ($string = false) {
+function errors () {
     if (!$errors = storage('errors')) {
         return array();
     }
     
-    return $string ? implode(' ', $errors) : $errors;
+    return $errors;
 }

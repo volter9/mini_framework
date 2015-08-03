@@ -6,7 +6,7 @@
 class EventsTest extends TestCase {
     
     /**
-     * Test binding events
+     * Test binding ~my master~ events
      */
     public function testBinding () {
         events\bind('foo', function () {

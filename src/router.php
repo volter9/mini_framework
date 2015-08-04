@@ -102,8 +102,8 @@ function process ($url) {
 function parse ($url, $action) {
     list($method, $id, $url) = parse_url($url);
     
-    $url = trim($url, '/ ');
     $action = parse_action($action);
+    $url    = trim($url, '/ ');
     
     return compact('method', 'id', 'url', 'action');
 }
@@ -117,14 +117,13 @@ function parse ($url, $action) {
 function parse_url ($url) {
     $fragments = explode(' ', $url);
     $count     = count($fragments);
+    $id        = count(storage('routes')) + 1 . '';
     
     if ($count === 2) {
-        array_splice($fragments, 1, 0, '-1');
+        array_splice($fragments, 1, 0, $id);
     }
     else if ($count === 1) {
-        $id = substr(md5(microtime()), 0, 6);
-        
-        array_unshift($fragments, '-1');
+        array_unshift($fragments, $id);
         array_unshift($fragments, '*');
     }
     
@@ -142,14 +141,24 @@ function parse_action ($action) {
         return $action;
     }
     
-    $name = 'index';
     $file = $action;
+    $name = 'index';
+    $namespace = '';
     
     if (strpos($action, ':') !== false) {
         list($file, $name) = explode(':', $action);
     }
     
-    return compact('file', 'name');
+    if (starts_with($name, '\\')) {
+        $namespace = before_last($name, '\\');
+        $name = after($name, '\\');
+    }
+    else {
+        $namespace = exclude($file, app\base_path());
+        $namespace = str_replace('/', '\\', "/$namespace");
+    }
+    
+    return compact('file', 'name', 'namespace');
 }
 
 /**
@@ -258,15 +267,11 @@ function invoke (array $route, array $parameters) {
     $action = $route['action'];
     
     if (!is_callable($action)) {
-        $name = $action['name'];
-        $file = $action['file'];
-        $path = str_replace('/', '\\', exclude($file, app\base_path()));
+        $ns     = $action['namespace'];
+        $action = $action['name'];
         
-        $action = starts_with($name, '\\') ? $name : "\\$path\\$name";
-    }
-    
-    if (is_string($action)) {
-        $init = "$path\\init";
+        $action = "$ns\\$action";
+        $init   = "$ns\\init";
         
         if (function_exists($init) && $init() === false) {
             return false;

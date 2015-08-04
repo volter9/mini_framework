@@ -63,7 +63,7 @@ function after ($haystack, $needle, $with_needle = false) {
  * @param bool $with_needle
  * @return string
  */
-function after_first ($haystack, $needle, $with_needle) {
+function after_first ($haystack, $needle, $with_needle = false) {
     if ($needle === '') {
         return $haystack;
     }
@@ -95,7 +95,7 @@ function before ($haystack, $needle, $with_needle = false) {
  * @param bool $with_needle
  * @return string
  */
-function before_last ($haystack, $needle, $with_needle) {
+function before_last ($haystack, $needle, $with_needle = false) {
     if ($needle === '') {
         return $haystack;
     }

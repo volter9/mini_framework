@@ -30,21 +30,24 @@ class RouterTest extends TestCase {
                 'actions/abc',
                 array(
                     'file' => 'actions/abc', 
-                    'name' => 'index'
+                    'name' => 'index',
+                    'namespace' => '\\actions\\abc'
                 )
             ),
             array(
                 'actions/abc:page',
                 array(
                     'file' => 'actions/abc', 
-                    'name' => 'page'
+                    'name' => 'page',
+                    'namespace' => '\\actions\\abc'
                 )
             ),
             array(
                 'actions/abc:\cool\page',
                 array(
                     'file' => 'actions/abc',
-                    'name' => '\cool\page'
+                    'name' => 'page',
+                    'namespace' => '\cool'
                 )
             ),
             array('is_int', 'is_int'),

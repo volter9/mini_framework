@@ -10,7 +10,7 @@ return array(
      * 
      * - autoload - automatically connect on boot to database
      */
-    'database' => array(
+    'db' => array(
         'autoload' => true,
         'default'  => array(
             'dsn' => 'sqlite::memory:'
@@ -24,7 +24,7 @@ return array(
      * - template - which template is chosen
      * - layout - name of layout in current template
      */
-    'templates' => array(
+    'view' => array(
         'directory' => app\base_path('resources/views'),
         'layout'    => 'layout'
     ),
@@ -36,7 +36,7 @@ return array(
      *              (not really used, it used with `url` function)
      * - symbols - readable way to capture parameters in URL's
      */
-    'routing' => array(
+    'router' => array(
         'base_url' => 'http://ffframework.dev/',
         'symbols' => array(
             '/:any' => '/?([\d\w\-_]+)',
@@ -46,7 +46,7 @@ return array(
     
     'autoload' => array(
         'modules' => array(
-            'router', 'events', 'view', 'database', 'input', 'i18n', 
+            'router', 'events', 'view', 'db', 'input', 'i18n', 
             'validation', 'pagination'
         )
     ),

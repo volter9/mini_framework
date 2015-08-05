@@ -9,17 +9,19 @@ require 'tests/TestCase.php';
 /**
  * Define default mini_framework constants
  */
-define('MF_BASEPATH', __DIR__ . '/');
-define('MF_APP_DIR' , __DIR__ . '/');
+define('MF_BASEPATH', dirname(__DIR__) . '/');
+define('MF_APP_DIR' , dirname(__DIR__) . '/');
 
 /**
  * Oh, global state manipulation
  */
-$_SERVER['DOCUMENT_ROOT'] = __DIR__ . '/';
+$_SERVER['DOCUMENT_ROOT'] = MF_BASEPATH;
 
 app\system_load(storage\config('tests/resources/config'));
 
-validation\init();
+$config = storage\shared('config');
+
+validation\init($config('validation'));
 
 db\connect();
 db\query(file_get_contents(app\base_path('resources/dump.sql')));

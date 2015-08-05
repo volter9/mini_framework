@@ -14,6 +14,10 @@ use Exception;
  * @require string
  */
 
+function init (array $data) {
+    storage('settings', $data);
+}
+
 /**
  * Views repository
  * 
@@ -46,13 +50,13 @@ function layout ($view, array $data = array()) {
 }
 
 /**
- * View a view
+ * View a partial view
  * 
  * @param string $view
  * @param array $data
  * @param bool $global
  */
-function view ($view, $data = array(), $global = true) {
+function partial ($view, $data = array(), $global = true) {
     if ($global) {
         storage('data', $data);
     }
@@ -68,7 +72,7 @@ function not_found () {
     
     events\emit('router:not_found');
     
-    view('404') xor exit;
+    partial('404') xor exit;
 }
 
 /**

@@ -11,6 +11,10 @@ use storage;
  * @require loader
  */
 
+function init (array $data) {
+    storage('settings', $data);
+}
+
 /**
  * Language storage
  * 
@@ -18,8 +22,9 @@ use storage;
  * @param mixed $value
  * @return mixed
  */
-function lang ($key = null, $value = null) {
+function storage ($key = null, $value = null) {
     static $repo = null;
+    
     $repo or $repo = storage\repo();
     
     return $repo($key, $value);

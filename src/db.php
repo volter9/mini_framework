@@ -13,6 +13,13 @@ use storage;
  */
 
 /**
+ * 
+ */
+function init (array $data) {
+    db($data);
+}
+
+/**
  * Database storage
  * 
  * @param string $key
@@ -33,11 +40,11 @@ function db ($key = null, $value = null) {
  * @param string
  */
 function connect ($group = 'default') {
-    if (db("$group.connection")) {
+    $config = db($group);
+    
+    if (isset($config['connection'])) {
         return;
     }
-    
-    $config = db($group);
     
     if (!$config) {
         throw new Exception("Database group '$group' does not exists!");
@@ -176,6 +183,12 @@ function prepare_insert (array $data) {
     return array($keys, $placeholders);
 }
 
+/**
+ * Escape the key
+ * 
+ * @param string $value
+ * @return string
+ */
 function escape ($value) {
     return "`$value`";
 }

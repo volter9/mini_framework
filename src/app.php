@@ -2,6 +2,7 @@
 
 use db;
 use events;
+use i18n;
 use loader;
 use router;
 use storage;
@@ -45,9 +46,7 @@ function boot ($config, $auto_dispatch = false) {
     load($config);
     
     events\emit('router:pre_dispatch');
-    
     dispatch(router\get_url(), $auto_dispatch);
-    
     events\emit('router:post_dispatch');
 }
 
@@ -72,24 +71,12 @@ function dispatch ($url, $auto_dispatch) {
  * 
  * Useful for unit testing purposes or excluding routing from 
  * loading process
- * 
+ *  
  * @param callable $config
  */
 function system_load ($config) {
-    loader\system($config('autoload.modules'));
+    loader\system($config('autoload.modules'), $config());
     
-    if (function_exists('router\storage')) {
-        $root = array_get($_SERVER, 'DOCUMENT_ROOT', base_path());
-        
-        router\storage('settings', $config('routing'));
-        router\storage('settings.root', router\base_url(base_path(), $root));
-    }
-    
-    function_exists('view\storage') and view\storage('settings', $config('templates'));
-    function_exists('lang\storage') and lang\storage('settings', $config('i18n'));
-    function_exists('db\db')        and db\db($config('database'));
-    
-    storage\shared('validation', $config('validation'));
     storage\shared('config', $config);
 }
 
@@ -99,30 +86,12 @@ function system_load ($config) {
  * @param callable $config
  */
 function load ($config) {
-    if ($config('database.autoload')) {
+    if ($config('db.autoload')) {
         db\connect();
     }
     
     loader\files($config('autoload.files'));
     loader\files($config('hooks'));
-    
-    load_models($config('autoload.models'));
-}
-
-/**
- * Load models
- * 
- * @param array $models
- * @return bool
- */
-function load_models ($models) {
-    if (empty($models)) {
-        return false;
-    }
-    
-    foreach ($models as $model) {
-        loader\model($model);
-    }
 }
 
 /**

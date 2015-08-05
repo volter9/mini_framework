@@ -24,6 +24,17 @@ class PaginationTest extends TestCase {
                     
                     'pagination' => array(1, 2, 3, 4, 5, 6, 7, 8, 10),
                 )
+            ),
+            
+            array(
+                4, 4, 0, array(
+                    'offset' => 0,
+                    'limit'  => 4,
+                    'pages'  => 1,
+                    'page'   => 1,
+                    
+                    'pagination' => array()
+                )
             )
         );
     }

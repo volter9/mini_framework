@@ -94,7 +94,7 @@ class ViewTest extends TestCase {
      */
     public function testViewingStuff ($view, array $data, $expected) {
         $output = view\capture(function () use ($view, $data) {
-            view\view($view, $data);
+            view\partial($view, $data);
         });
         
         $this->assertEquals($output, $expected);

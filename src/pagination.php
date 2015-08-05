@@ -33,10 +33,6 @@ function clamp ($int, $min, $max) {
  * @return int
  */
 function limited_range ($center, $limit, $min, $max) {
-    if ($limit < 2) {
-        return array();
-    }
-    
     $half = ceil($limit / 2);
     
     $start = (int)clamp($center - $half, $min, $max);
@@ -59,12 +55,14 @@ function limited_range ($center, $limit, $min, $max) {
  * @return array
  */
 function generate ($total, $items, $page, $limit = 9) {
-    $offset = ($page - 1) * $items;
+    $offset = clamp($page - 1, 0, PHP_INT_MAX) * $items;
     
     $pages = (int)ceil($total / $items);
     $page  = clamp($page, 1, $pages);
     
-    $pagination = limited_range($page, $limit, 1, $pages);
+    $pagination = $pages >= 2 
+        ? limited_range($page, $limit, 1, $pages)
+        : array();
     
     $limit = $items;
     
@@ -80,7 +78,7 @@ function generate ($total, $items, $page, $limit = 9) {
  * @param int $page
  * @return array
  */
-function paginate_query ($query, array $data, $limit, $page) {
+function paginate_query ($query, array $data, $limit, $page = 1) {
     $countQuery = paginate_query_replace_select($query);
     $countQuery = pagiante_query_remove_joins($countQuery);
     

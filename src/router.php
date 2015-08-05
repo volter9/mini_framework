@@ -9,10 +9,22 @@ use storage;
  * HTTP routing and URL generation (mostly)
  * 
  * @package mini_framework
+ * @require app
  * @require events
  * @require storage
  * @require loader
  */
+
+/**
+ * @param array $data
+ */
+function init (array $data) {
+    $path = app\base_path();
+    $root = array_get($_SERVER, 'DOCUMENT_ROOT', $path);
+    
+    storage('settings', $data);
+    storage('settings.root', base_url($path, $root));
+}
 
 /**
  * Router storage
@@ -218,9 +230,9 @@ function dispatch ($found) {
         return false;
     }
     
-    $route = $found['found'];
-    
     storage('route', $found);
+    
+    $route = $found['found'];
     
     if (!is_callable($route['action'])) {
         loader\php($route['action']['file']);
@@ -251,7 +263,7 @@ function auto_dispatch ($url) {
         return false;
     }
     
-    $route = array('action' => array('name' => $action));
+    $route = array('action' => parse_action("actions/$controller:$action"));
     
     return invoke($route, $fragments);
 }
@@ -318,33 +330,25 @@ function base_url ($base, $root) {
 }
 
 /**
- * Create a full link to route 
+ * Create a link to route 
  * 
  * @param string $id
  * @param array $params
- * @param bool $absolute
- * @return string|bool
+ * @return string
  */
-function url ($id, $params = array(), $absolute = false) {
+function url ($id, $params = array()) {
     if (!$route = storage("routes.$id")) {
-        return false;
+        return '';
     }
     
-    $base = storage('settings.base_url');    
-    $root = storage('settings.root');
-    $root = $root ? $root : '';
-
-    $basepath = $absolute ? "{$base}$root/" : chop("/$root", '/');
-    
-    $url = replace($route['url'], $params);
-    
-    return "$basepath/$url";
+    return path(replace($route['url'], $params));
 }
 
 /**
  * Get URL path from root to file
  * 
  * @param string $path
+ * @return string
  */
 function path ($path = '') {
     $root = storage('settings.root');
@@ -372,7 +376,7 @@ function redirect ($id, $params = array(), $exit = true) {
  * @see redirect_path
  */
 function redirect_url ($url, $exit = true) {
-    redirect_path(path($url, $exit));
+    redirect_path(path($url), $exit);
 }
 
 /**

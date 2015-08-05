@@ -53,11 +53,15 @@ function app_file ($file, $ignore = false) {
  * Alias to load files in api directory
  *
  * @param string $file
- * @param bool $ignore
+ * @param array $args
  * @return mixed
  */
-function api ($file, $ignore = false) {
-    return php(app\api_path($file), $ignore);
+function api ($file, array $args = array()) {
+    php(app\api_path($file));
+    
+    $func = $func = "\\$file\\init";
+    
+    function_exists($func) and $func($args);
 }
 
 /**
@@ -81,11 +85,14 @@ function files ($files) {
  * @param string $model
  * @param string $path
  */
-function model ($model, $path = 'app/models') {
-    if (file_exists(app\base_path("$path/$model.php"))) {
-        php("$path/$model");
+function model ($model, $path = '') {
+    $path = $path ? $path : str_replace('\\', '/', $model);
+    $path = trim($path, '/');
+    
+    if (file_exists(app\base_path("$path.php"))) {
+        php($path);
         
-        function_exists($model = "{$model}_init") and $model();
+        function_exists($model = "$model\\init") and $model();
     }
 }
 
@@ -93,12 +100,13 @@ function model ($model, $path = 'app/models') {
  * Load system dependencies
  * 
  * @param array $modules
+ * @param array $data
  */
-function system ($modules = null) {
-    $api = array('router', 'events', 'view', 'database', 'input', 'i18n');
+function system ($modules = null, array $data = array()) {
+    $api = array('router', 'events', 'view', 'db', 'input', 'i18n');
     $api = empty($modules) ? $api : $modules;
     
     foreach ($api as $script) {
-        api($script);
+        api($script, array_get($data, $script, array()));
     }
 }

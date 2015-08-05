@@ -13,11 +13,11 @@ class RouterTest extends TestCase {
             ),
             array(
                 'GET /cool/route',
-                array('GET', '-1', '/cool/route')
+                array('GET', '6', '/cool/route')
             ),
             array(
                 '/cool/route',
-                array('*', '-1', '/cool/route')
+                array('*', '6', '/cool/route')
             )
         );
     }

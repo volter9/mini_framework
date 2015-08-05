@@ -31,15 +31,9 @@ function storage ($key = null, $value = null) {
 
 /**
  * Initiate validation
- * 
- * @param array $fields
- * @param array $messages
- * @param array $validators
  */
-function init (array $validators = array()) {
-    $path = storage\shared('validation.validators');
-    
-    $validators = $validators ? $validators : loader\app_file($path, true);
+function init (array $data) {
+    $validators = loader\app_file($data['validators'], true);
     
     if (empty($validators)) {
         throw new Exception('There is no validators found!');
@@ -52,10 +46,9 @@ function init (array $validators = array()) {
  * Add a validator
  * 
  * @param string $name
- * @param Closure $validator
- * @param string|Closure $message
+ * @param callable $validator
  */
-function add ($name, Closure $validator) {
+function add ($name, $validator) {
     storage('validators', array(
         $name => $validator
     ));
@@ -70,6 +63,18 @@ function add ($name, Closure $validator) {
  * @return bool
  */
 function validate (array $data, array $rules, $halt = false) {
+    return empty(validate_errors($data, $rules, $halt));
+}
+
+/**
+ * Validate input data and return errors
+ * 
+ * @param array $data
+ * @param array $rules
+ * @param bool $halt
+ * @return array
+ */
+function validate_errors (array $data, array $rules, $halt = false) {
     if (!$rules) {
         throw new Exception('Validation rules were not initialized!');
     }
@@ -89,10 +94,7 @@ function validate (array $data, array $rules, $halt = false) {
         }
     }
     
-    storage('errors', 42);
-    storage('errors', $errors);
-    
-    return empty($errors);
+    return $errors;
 }
 
 /**
@@ -110,13 +112,11 @@ function validate_field ($rules, $value, array $data = array()) {
         $validator = storage("validators.$name");
         
         if (!$validator) {
-            throw new Exception(
-                "Validator '$name' doesn't exists!"
-            );
+            throw new Exception("Validator '$name' doesn't exists!");
         }
         
-        $validator_params = array_merge(array($value, $data), $params);
-        $result = (bool)call_user_func_array($validator, $validator_params);
+        $args = array_merge(array($value, $data), $params);
+        $result = call_user_func_array($validator, $args);
         
         if (!$result) {
             return array($name, $params);
@@ -159,18 +159,4 @@ function parse_rule ($rule) {
     list($validator, $params) = explode(':', $rule);
     
     return array($validator, array_numerify(explode(',', $params)));
-}
-
-/**
- * Get validation errors
- * 
- * @param bool $string
- * @return array
- */
-function errors () {
-    if (!$errors = storage('errors')) {
-        return array();
-    }
-    
-    return $errors;
 }

@@ -1,1 +1,1 @@
-<sarcasm><?php view\view($view) ?></sarcasm>
+<sarcasm><?php view\partial($view) ?></sarcasm>

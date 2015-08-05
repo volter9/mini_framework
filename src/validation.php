@@ -3,7 +3,6 @@
 use loader;
 use storage;
 
-use Closure;
 use Exception;
 
 /**
@@ -33,7 +32,7 @@ function storage ($key = null, $value = null) {
  * Initiate validation
  */
 function init (array $data) {
-    $validators = loader\app_file($data['validators'], true);
+    $validators = loader\app_file(array_get($data, 'validators'), true);
     
     if (empty($validators)) {
         throw new Exception('There is no validators found!');

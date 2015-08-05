@@ -1,5 +1,8 @@
 <?php namespace forms;
 
+use storage;
+use view;
+
 /**
  * Form building function
  * 
@@ -16,12 +19,11 @@
  * @param mixed $value
  * @return mixed
  */
-function forms ($key = null, $value = null) {
+function storage ($key = null, $value = null) {
     static $repo;
     
-    $repo or $repo = repo(array(
-        'providers' => array(),
-        'elements'  => array()
+    $repo or $repo = storage\repo(array(
+        'providers' => array()
     ));
     
     return $repo($key, $value);
@@ -31,10 +33,10 @@ function forms ($key = null, $value = null) {
  * Add a form provider
  * 
  * @param string $name
- * @param Closure $callback
+ * @param callable $callback
  */
-function form_provider ($name, Closure $callback) {
-    forms('providers', array($name => $callback));
+function provider ($name, $callback) {
+    storage('providers', array($name => $callback));
 }
 
 /**
@@ -43,10 +45,10 @@ function form_provider ($name, Closure $callback) {
  * @param array $scheme
  * @param array $data
  */
-function build_form (array $scheme, array $data) {
+function build (array $scheme, array $data) {
     $view = $scheme['view'];
     
-    view($view, array(
+    view\partial($view, array(
         'scheme' => $scheme,
         'data' => $data
     ));
@@ -58,7 +60,7 @@ function build_form (array $scheme, array $data) {
  * @param string $type
  * @return string
  */
-function form_element_path ($type) {
+function element_path ($type) {
     return starts_with($type, '/') ? $type : "forms/elements/$type";
 }
 
@@ -67,14 +69,14 @@ function form_element_path ($type) {
  * 
  * @param array $data
  */
-function build_element ($type, array $data) {
+function element ($type, array $data) {
     if (strpos($type, ':') !== false) {
         list($type, $provider) = explode(':', $type);
         
-        return build_element_provider($type, $provider, $data);
+        return element_provider($type, $provider, $data);
     }
     
-    view(form_element_path($type), $data);
+    view\partial(element_path($type), $data);
 }
 
 /**
@@ -84,16 +86,14 @@ function build_element ($type, array $data) {
  * @param string $provider
  * @param array $data
  */
-function build_element_provider ($type, $provider, array $data) {
-    $data_provider = forms("providers.$provider");
+function element_provider ($type, $provider, array $data) {
+    $data_provider = storage("providers.$provider");
     
     if (!$data_provider) {
-        throw new Exception(
-            "Provider '$provider' doesn't exists!"
-        );
+        throw new Exception("Provider '$provider' doesn't exists!");
     }
     
-    view(form_element_path($type), array_merge($data, array(
+    view\partial(element_path($type), array_merge($data, array(
         'data' => $data_provider()
     )));
 }

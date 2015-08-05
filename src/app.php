@@ -62,6 +62,8 @@ function dispatch ($url, $auto_dispatch) {
         : router\dispatch(router\fetch($url, $method));
     
     if ($result === false) {
+        events\emit('router:not_found');
+        
         view\not_found();
     }
 }

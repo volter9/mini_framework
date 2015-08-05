@@ -19,17 +19,16 @@ use Exception;
  * @param bool $ignore
  * @param string $ext
  */
-function php ($file, $ignore = false, $ext = '.php') {
+function php ($file, $ignore = false) {
     static $loads = array();
     
-    if (ends_with($file, $ext)) {
-        $file = substr($file, 0, -strlen($ext));
+    if (ends_with($file, '.php')) {
+        $file = substr($file, 0, -strlen('.php'));
     }
     
-    $filepath = $file . $ext;
-    $exists   = file_exists($filepath);
+    $filepath = "$file.php";
     
-    if ($exists && (!isset($loads[$file]) || $ignore)) {
+    if (file_exists($filepath) && (!isset($loads[$file]) || $ignore)) {
         $loads[$file] = true;
         
         return require $filepath;

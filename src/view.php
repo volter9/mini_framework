@@ -1,6 +1,5 @@
 <?php namespace view;
 
-use events;
 use storage;
 use router;
 
@@ -65,8 +64,6 @@ function partial ($view, $data = array(), $global = true) {
  */
 function not_found () {
     header('HTTP/1.1 404 Not Found');
-    
-    events\emit('router:not_found');
     
     partial('404') xor exit;
 }

@@ -13,7 +13,9 @@ use storage;
  */
 
 /**
+ * Init database
  * 
+ * @param array $data
  */
 function init (array $data) {
     db($data);

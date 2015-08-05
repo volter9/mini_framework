@@ -15,16 +15,16 @@
  * @return mixed
  */
 function session ($key = null, $value = null) {
-    if ($key && $value !== null) {
-        $_SESSION[$key] = $value;
-    }
-    
-    if ($key && $value === false) {
-        unset($_SESSION[$key]);
-    }
-    
-    if ($key && !$value) {
-        return isset($_SESSION[$key]) ? $_SESSION[$key] : false;
+    if ($key) {
+        if ($value !== null) {
+            array_set($_SESSION, $key, $value);
+        }
+        else if ($value === false) {
+            unset($_SESSION[$key]);
+        }
+        else {
+            return array_get($_SESSION, $key);
+        }
     }
     
     return $_SESSION;
@@ -38,14 +38,10 @@ function session ($key = null, $value = null) {
  * @return array
  */
 function get ($key = null, $sanitize = false) {
-    $array = get_array();
-    $value = false;
+    $value = get_array();
     
-    if ($key && isset($array[$key])) {
-        $value = $array[$key];
-    }
-    else if ($key === null) {
-        $value = $array;
+    if ($key && isset($value[$key])) {
+        $value = $value[$key];
     }
     
     return $sanitize ? sanitize($value) : $value;
@@ -66,9 +62,12 @@ function get_array () {
         case 'POST':
             return $_POST;
         
+        case 'PUT':
+            return file_get_contents('php://input');
+        
         /**
          * Other methods available only in **enterprise edition**.
-         * But here's an empty array for you, as a fallback.
+         * An empty array is provided as a fallback.
          */
         default:
             return array();
@@ -85,7 +84,8 @@ function is_post () {
 }
 
 /**
- * Is request is AJAX request
+ * Is request is AJAX request.
+ * jQuery AJAX or with set X-Requested-With header
  * 
  * @return bool
  */

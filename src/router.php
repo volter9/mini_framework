@@ -5,6 +5,8 @@ use events;
 use loader;
 use storage;
 
+use Exception;
+
 /**
  * HTTP routing and URL generation (mostly)
  * 
@@ -63,10 +65,13 @@ function map ($url, $action) {
  * @return array
  */
 function parse ($url, $action) {
+    if (!is_callable($action)) {
+        throw new Exception('Given action is not callable!');
+    }
+    
     list($method, $id, $url) = parse_url($url);
     
-    $action = parse_action($action);
-    $url    = trim($url, '/ ');
+    $url = trim($url, '/');
     
     return compact('method', 'id', 'url', 'action');
 }
@@ -94,34 +99,22 @@ function parse_url ($url) {
 }
 
 /**
- * Parse the passed action in router\map function
+ * Action callback
  * 
- * @param string $action
- * @return array|string
+ * @param string $function
+ * @param string $path
+ * @return \Closure
  */
-function parse_action ($action) {
-    if (is_callable($action)) {
-        return $action;
-    }
-    
-    $file = $action;
-    $name = 'index';
-    $namespace = '';
-    
-    if (contains($action, ':')) {
-        list($file, $name) = explode(':', $action);
-    }
-    
-    if (starts_with($name, '\\')) {
-        $namespace = before_last($name, '\\');
-        $name = after($name, '\\');
-    }
-    else {
-        $namespace = exclude($file, app\base_path());
-        $namespace = str_replace('/', '\\', "/$namespace");
-    }
-    
-    return compact('file', 'name', 'namespace');
+function action ($function, $path) {
+    return function () use ($path, $function) {
+        loader\php($path);
+        
+        $ns = before_last($function, '\\');
+        
+        function_exists($fn = "$ns\\init") and $fn();
+        
+        return call_user_func_array($function, func_get_args());
+    };
 }
 
 /**
@@ -142,7 +135,7 @@ function fetch ($url, $method) {
 }
 
 /**
- * Find route
+ * Find a route in the routes container
  * 
  * @param string $url
  * @param string $method
@@ -171,21 +164,19 @@ function find ($url, $method) {
 }
 
 /**
- * Process a route
+ * Process a route, replace symbols by RegEx snippets
  * 
  * @param string $url
  * @return string
  */
 function process ($url) {
     static $symbols = array(
-        '/:any' => '/?([\d\w\-_]+)',
-        '/:num' => '/?(\d+)'
+        '/:every' => '/?(.*)',
+        '/:any'   => '/?([\d\w\-_]+)',
+        '/:num'   => '/?(\d+)'
     );
     
-    return str_replace(
-        array_keys($symbols), 
-        array_values($symbols), $url
-    );
+    return strtr($url, $symbols);
 }
 
 /**
@@ -199,15 +190,7 @@ function dispatch ($found) {
         return false;
     }
     
-    storage('route', $found);
-    
-    $route = $found['found'];
-    
-    if (!is_callable($route['action'])) {
-        loader\php($route['action']['file']);
-    }
-    
-    return invoke($route, $found['matches']);
+    return invoke($found['found']['action'], $found['matches']);
 }
 
 /**
@@ -225,44 +208,20 @@ function auto_dispatch ($url) {
     $action = array_shift($fragments);
     $action = $action ? $action : 'index';
     
-    try {
-        loader\app_file("actions/$controller");
-    }
-    catch (Exception $e) {
-        return false;
-    }
-    
-    $route = array('action' => parse_action("actions/$controller:$action"));
-    
-    return invoke($route, $fragments);
+    return invoke(action(
+        "\actions\$controller\$action",
+        app\app_path("actions/$controller")
+    ), $fragments);
 }
 
 /**
  * Invoke the route
  * 
- * @param array $action
+ * @param callable $action
  * @param array $parameters
  * @return mixed
  */
-function invoke (array $route, array $parameters) {
-    $action = $route['action'];
-    
-    if (!is_callable($action)) {
-        $ns     = $action['namespace'];
-        $action = $action['name'];
-        
-        $action = "$ns\\$action";
-        $init   = "$ns\\init";
-        
-        if (function_exists($init) && $init() === false) {
-            return false;
-        }
-        
-        if (!function_exists($action)) {
-            return false;
-        }
-    }
-    
+function invoke ($action, array $parameters) {
     return call_user_func_array($action, $parameters);
 }
 

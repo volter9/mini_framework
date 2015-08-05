@@ -86,7 +86,7 @@ function render ($__view__, array $__data__) {
  * @param Exception $exception
  */
 function error (Exception $exception) {
-    view('error', compact('exception')) xor exit;
+    partial('error', compact('exception')) xor exit;
 }
 
 /**

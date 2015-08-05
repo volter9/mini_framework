@@ -22,39 +22,6 @@ class RouterTest extends TestCase {
         );
     }
     
-    public function actions () {
-        $action = function () {};
-        
-        return array(
-            array(
-                'actions/abc',
-                array(
-                    'file' => 'actions/abc', 
-                    'name' => 'index',
-                    'namespace' => '\\actions\\abc'
-                )
-            ),
-            array(
-                'actions/abc:page',
-                array(
-                    'file' => 'actions/abc', 
-                    'name' => 'page',
-                    'namespace' => '\\actions\\abc'
-                )
-            ),
-            array(
-                'actions/abc:\cool\page',
-                array(
-                    'file' => 'actions/abc',
-                    'name' => 'page',
-                    'namespace' => '\cool'
-                )
-            ),
-            array('is_int', 'is_int'),
-            array($action, $action)
-        );
-    }
-    
     public function routes () {
         return array(
             array('', 'GET'),
@@ -79,12 +46,18 @@ class RouterTest extends TestCase {
         
         router\map(
             'GET friends /friends/', 
-            app\app_path('resources/actions/friends:index')
+            router\action(
+                '\resources\actions\friends\index',
+                app\app_path('resources/actions/friends')
+            )
         );
         
         router\map(
             'GET posts /posts/', 
-            app\app_path('resources/actions/posts:\posts\actions\index')
+            router\action(
+                '\posts\actions\index',
+                app\app_path('resources/actions/posts')
+            )
         );
         
         $this->assertCount(5, router\storage('routes'));
@@ -127,13 +100,6 @@ class RouterTest extends TestCase {
      */
     public function testParsingURL ($url, $expected) {
         $this->assertEquals(router\parse_url($url), $expected);
-    }
-    
-    /**
-     * @dataProvider actions
-     */
-    public function testParsingActions ($action, $expected) {
-        $this->assertEquals(router\parse_action($action), $expected);
     }
     
 }

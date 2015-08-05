@@ -42,11 +42,7 @@ function storage ($key = null, $value = null) {
 function layout ($view, array $data = array()) {
     $data['view'] = $view;
     
-    if (!empty($data)) {
-        storage('data', $data);
-    }
-    
-    render(path(storage('settings.layout')), $data);
+    partial(storage('settings.layout'), $data);
 }
 
 /**
@@ -68,7 +64,7 @@ function partial ($view, $data = array(), $global = true) {
  * Show page 404
  */
 function not_found () {
-    header("HTTP/1.1 404 Not Found");
+    header('HTTP/1.1 404 Not Found');
     
     events\emit('router:not_found');
     
@@ -93,9 +89,7 @@ function render ($__view__, array $__data__) {
  * @param Exception $exception
  */
 function error (Exception $exception) {
-    $data = array('exception' => $exception);
-    
-    view('error', $data) xor exit;
+    view('error', compact('exception')) xor exit;
 }
 
 /**
@@ -140,10 +134,8 @@ function path ($view) {
 function asset_url ($file = '') {
     list($template, $file) = parse_template($file);
     
-    $folder = chop(storage('settings.directory'), '/');
-    $folder = after($folder, '/');
-    
-    $root = router\storage('settings.root');
+    $folder = after(chop(storage('settings.directory'), '/'), '/');
+    $root   = storage('settings.root');
     
     return deduplicate("/$root/$folder/$template/$file", '/');
 }

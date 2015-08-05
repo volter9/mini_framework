@@ -17,7 +17,7 @@ class EventsTest extends TestCase {
             $this->assertTrue($bool);
         });
         
-        $this->assertCount(1, events\storage('foo'));
+        $this->assertCount(1, events\bind('foo'));
     }
     
     /**

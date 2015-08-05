@@ -15,21 +15,12 @@ use storage;
  * @param string $event
  * @param callable $callback
  */
-function storage ($event, $callback = null) {
+function bind ($event, $callback = null) {
     static $stack = null;
+    
     $stack or $stack = storage\stack();
     
     return $stack($event, $callback);
-}
-
-/**
- * Bind an event
- * 
- * @param string $event
- * @param callable $callback
- */
-function bind ($event, $callback) {
-    storage($event, $callback);
 }
 
 /**
@@ -39,19 +30,15 @@ function bind ($event, $callback) {
  * @return array
  */
 function emit ($event) {
-    $args  = array_slice(func_get_args(), 1);
-    $event = storage($event);
-    
-    if (empty($event)) {
+    if (!$event = bind($event)) {
         return false;
     }
     
+    $args = array_slice(func_get_args(), 1);
     $result = array();
     
     foreach ($event as $callback) {
-        if ($value = call_user_func_array($callback, $args)) {
-            $result[] = $value;
-        }
+        $result[] = call_user_func_array($callback, $args);
     }
     
     return $result;

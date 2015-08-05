@@ -19,7 +19,7 @@ use view;
 /**
  * mini_framework constants
  * 
- * @const string MF_VERSION Version of mini_blog
+ * @const string MF_VERSION Version of mini_framework
  * @const string MF_API_DIR Path to system files
  */
 define('MF_VERSION', '2.0.0');

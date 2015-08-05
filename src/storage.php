@@ -26,23 +26,19 @@ function repo (array $repo = array(), $readonly = false) {
      * @return mixed
      */
     return function ($key = null, $value = null) use ($readonly, &$repo) {
-        if (!$readonly && $key !== null && $value !== null) {
-            array_set($repo, $key, $value);
+        if (!$readonly) {
+            if ($key !== null && $value !== null) {
+                return array_set($repo, $key, $value);
+            }
+        
+            if (is_array($key)) {
+                $repo = array_merge($repo, $key);
             
-            return;
+                return;
+            }
         }
         
-        if (!$readonly && is_array($key)) {
-            $repo = array_merge($repo, $key);
-            
-            return;
-        }
-        
-        if ($key) {
-            return array_get($repo, $key);
-        }
-        
-        return $repo;
+        return $key ? array_get($repo, $key) : $repo;
     };
 }
 
@@ -73,11 +69,7 @@ function stack (array $repo = array()) {
             return;
         }
         
-        if (isset($repo[$key])) {
-            return $repo[$key];
-        }
-        
-        return false;
+        return isset($repo[$key]) ? $repo[$key] : false;
     };
 }
 
@@ -101,11 +93,7 @@ function box (array $repo = array()) {
             return;
         }
         
-        if (isset($repo[$key])) {
-            return $repo[$key];
-        }
-        
-        return false;
+        return isset($repo[$key]) ? $repo[$key] : false;
     };
 }
 

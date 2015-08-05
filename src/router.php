@@ -56,55 +56,6 @@ function map ($url, $action) {
 }
 
 /**
- * Find route
- * 
- * @param string $url
- * @param string $method
- * @return array|bool
- */
-function find ($url, $method) {
-    $routes = storage('routes');
-    
-    foreach ($routes as $found) {
-        $routeUrl = process($found['url']);
-        $pattern  = "#^{$routeUrl}\$#i";
-        
-        $correct_method = in_array($found['method'], array('*', $method));
-        $matched_url    = preg_match($pattern, $url, $matches);
-        
-        if ($correct_method && $matched_url) {
-            $matches = array_numerify($matches);
-            
-            array_shift($matches);
-            
-            return compact('found', 'matches');
-        }
-    }
-    
-    return false;
-}
-
-/**
- * Process a route
- * 
- * @param string $url
- * @return string
- */
-function process ($url) {
-    static $symbols = null;
-    
-    if (!$symbols) {
-        $symbols = storage('settings.symbols');
-        $symbols or $symbols = array();
-    }
-    
-    $find    = array_keys($symbols);
-    $replace = array_values($symbols);
-    
-    return str_replace($find, $replace, $url);
-}
-
-/**
  * Parse a full route from url and action strings
  * 
  * @param string $url
@@ -157,7 +108,7 @@ function parse_action ($action) {
     $name = 'index';
     $namespace = '';
     
-    if (strpos($action, ':') !== false) {
+    if (contains($action, ':')) {
         list($file, $name) = explode(':', $action);
     }
     
@@ -174,35 +125,6 @@ function parse_action ($action) {
 }
 
 /**
- * Replace route url with parameters
- * 
- * @param string $url
- * @param array $params
- */
-function replace ($url, array $params) {
-    $regex = '/:(\w+)\??/';
-    
-    if (count($params)) {
-        $regex = array_fill(0, count($params), '/:(\w+)\??/');
-    }
-    else {
-        $params = '';
-    }
-    
-    return cleanup(trim(preg_replace($regex, $params, $url, 1), '/ '));
-}
-
-/**
- * Clean up the route's URL
- * 
- * @param string $url
- * @return string
- */
-function cleanup ($url) {
-    return chop(preg_replace('/:(\w+)\??/', '', $url), '/ ');
-};
-
-/**
  * Execute order 66
  * 
  * @param string $url
@@ -217,6 +139,53 @@ function fetch ($url, $method) {
     events\emit('router:found', $found['found'], $found['matches']);
     
     return $found;
+}
+
+/**
+ * Find route
+ * 
+ * @param string $url
+ * @param string $method
+ * @return array|bool
+ */
+function find ($url, $method) {
+    $routes = storage('routes');
+    
+    foreach ($routes as $found) {
+        $routeUrl = process($found['url']);
+        $pattern  = "#^{$routeUrl}\$#i";
+        
+        $correct_method = in_array($found['method'], array('*', $method));
+        $matched_url    = preg_match($pattern, $url, $matches);
+        
+        if ($correct_method && $matched_url) {
+            array_shift($matches);
+            
+            $matches = array_numerify($matches);
+            
+            return compact('found', 'matches');
+        }
+    }
+    
+    return false;
+}
+
+/**
+ * Process a route
+ * 
+ * @param string $url
+ * @return string
+ */
+function process ($url) {
+    static $symbols = array(
+        '/:any' => '/?([\d\w\-_]+)',
+        '/:num' => '/?(\d+)'
+    );
+    
+    return str_replace(
+        array_keys($symbols), 
+        array_values($symbols), $url
+    );
 }
 
 /**
@@ -304,14 +273,9 @@ function invoke (array $route, array $parameters) {
  */
 function get_url () {
     $root = storage('settings.root');
-    $url  = \parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+    $url  = \parse_url(array_get($_SERVER, 'REQUEST_URI', ''), PHP_URL_PATH);
     
-    if ($root && strpos($url, $root) !== false) {
-        $url = explode($root, $url);
-        $url = end($url);
-    }
-    
-    return trim($url, ' /');
+    return trim(after($url, $root), ' /');
 }
 
 /**
@@ -342,6 +306,35 @@ function url ($id, $params = array()) {
     }
     
     return path(replace($route['url'], $params));
+}
+
+/**
+ * Replace route url with parameters
+ * 
+ * @param string $url
+ * @param array $params
+ */
+function replace ($url, array $params) {
+    $regex = '/:(\w+)\??/';
+    
+    if (count($params)) {
+        $regex = array_fill(0, count($params), '/:(\w+)\??/');
+    }
+    else {
+        $params = '';
+    }
+    
+    return cleanup(preg_replace($regex, $params, $url, 1));
+}
+
+/**
+ * Clean up the route's URL
+ * 
+ * @param string $url
+ * @return string
+ */
+function cleanup ($url) {
+    return trim(preg_replace('/:(\w+)\??/', '', $url), '/');
 }
 
 /**

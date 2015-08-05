@@ -32,10 +32,16 @@ function storage ($key = null, $value = null) {
  * Initiate validation
  */
 function init (array $data) {
-    $validators = loader\app_file(array_get($data, 'validators'), true);
+    $validators = array_get($data, 'validators');
+    
+    if (!$validators) {
+        return;
+    }
+    
+    $validators = loader\app_file($validators, true);
     
     if (empty($validators)) {
-        throw new Exception('There is no validators found!');
+        throw new Exception('No validators were found!');
     }
     
     storage('validators', $validators);
@@ -48,9 +54,7 @@ function init (array $data) {
  * @param callable $validator
  */
 function add ($name, $validator) {
-    storage('validators', array(
-        $name => $validator
-    ));
+    storage('validators', array($name => $validator));
 }
 
 /**

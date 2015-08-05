@@ -100,11 +100,7 @@ function is_ajax () {
  * @return mixed
  */
 function sanitize ($input) {
-    if (is_array($input)) {
-        return array_map(function ($v) {
-            return sanitize($v);
-        }, $input);
-    }
-    
-    return filter_var($input, FILTER_SANITIZE_STRING);
+    return is_array($input) 
+        ? array_map('\input\sanitize', $input)
+        : filter_var($input, FILTER_SANITIZE_STRING);
 }

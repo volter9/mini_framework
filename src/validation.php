@@ -9,8 +9,6 @@ use Exception;
  * Data validation
  * 
  * @package mini_framework
- * @require storage
- * @require array
  */
 
 /**
@@ -30,6 +28,8 @@ function storage ($key = null, $value = null) {
 
 /**
  * Initiate validation
+ * 
+ * @param array $data
  */
 function init (array $data) {
     $validators = array_get($data, 'validators');

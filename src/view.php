@@ -1,7 +1,6 @@
 <?php namespace view;
 
 use storage;
-use router;
 
 use Exception;
 
@@ -9,8 +8,6 @@ use Exception;
  * View component
  * 
  * @package mini_framework
- * @require storage
- * @require string
  */
 
 function init (array $data) {
@@ -39,9 +36,10 @@ function storage ($key = null, $value = null) {
  * @param array $data
  */
 function layout ($view, array $data = array()) {
-    $data['view'] = $view;
-    
-    partial(storage('settings.layout'), $data);
+    partial(
+        storage('settings.layout'), 
+        array_merge($data, compact('view'))
+    );
 }
 
 /**
@@ -72,7 +70,7 @@ function not_found () {
  * Isolation function from view's function context
  * 
  * @param string $__view__
- * @param array $__data__
+ * @param array  $__data__
  */
 function render ($__view__, array $__data__) {
     extract($__data__);
@@ -119,7 +117,9 @@ function path ($view) {
     
     list($template, $view) = parse_template($view);
     
-    return $template ? "$directory/$template/html/$view.php" : "$directory/$view.php";
+    return $template 
+        ? "$directory/$template/html/$view.php" 
+        : "$directory/$view.php";
 }
 
 /**
@@ -131,7 +131,7 @@ function path ($view) {
 function asset_url ($file = '') {
     list($template, $file) = parse_template($file);
     
-    $folder = after(chop(storage('settings.directory'), '/'), '/');
+    $folder = after(storage('settings.directory'), '/');
     $root   = storage('settings.root');
     
     return deduplicate("/$root/$folder/$template/$file", '/');

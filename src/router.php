@@ -11,10 +11,6 @@ use Exception;
  * HTTP routing and URL generation (mostly)
  * 
  * @package mini_framework
- * @require app
- * @require events
- * @require storage
- * @require loader
  */
 
 /**
@@ -171,8 +167,8 @@ function find ($url, $method) {
  */
 function process ($url) {
     static $symbols = array(
-        '/:every' => '/?(.*)',
-        '/:any'   => '/?([\d\w\-_]+)',
+        '/:every' => '/?(.+)',
+        '/:any'   => '/?([^/]+)',
         '/:num'   => '/?(\d+)'
     );
     
@@ -207,11 +203,10 @@ function auto_dispatch ($url) {
     
     $action = array_shift($fragments);
     $action = $action ? $action : 'index';
+    $action = "\actions\$controller\$action";
+    $path   = app\app_path("actions/$controller");
     
-    return invoke(action(
-        "\actions\$controller\$action",
-        app\app_path("actions/$controller")
-    ), $fragments);
+    return invoke(action($action, $path), $fragments);
 }
 
 /**

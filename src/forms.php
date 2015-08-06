@@ -7,9 +7,6 @@ use view;
  * Form building function
  * 
  * @package mini_blog
- * @require view
- * @require storage
- * @require string
  */
 
 /**
@@ -50,7 +47,7 @@ function build (array $scheme, array $data) {
     
     view\partial($view, array(
         'scheme' => $scheme,
-        'data' => $data
+        'data'   => $data
     ));
 }
 
@@ -70,7 +67,7 @@ function element_path ($type) {
  * @param array $data
  */
 function element ($type, array $data) {
-    if (strpos($type, ':') !== false) {
+    if (contains($type, ':')) {
         list($type, $provider) = explode(':', $type);
         
         return element_provider($type, $provider, $data);

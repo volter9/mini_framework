@@ -12,8 +12,6 @@ use view;
  * Application initialization functions
  * 
  * @package mini_framework
- * @require storage
- * @require loader
  */
 
 /**
@@ -78,7 +76,6 @@ function dispatch ($url, $auto_dispatch) {
  */
 function system_load ($config) {
     loader\system($config('autoload.modules'), $config());
-    
     storage\shared('config', $config);
 }
 

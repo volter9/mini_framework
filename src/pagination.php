@@ -6,7 +6,6 @@ use db;
  * Pagination utilities
  * 
  * @package mini_framework
- * @require database
  */
 
 /**
@@ -78,7 +77,7 @@ function generate ($total, $items, $page, $limit = 9) {
  * @param int $page
  * @return array
  */
-function paginate_query ($query, array $data, $limit, $page = 1) {
+function query ($query, array $data, $limit, $page = 1) {
     $countQuery = paginate_query_replace_select($query);
     $countQuery = pagiante_query_remove_joins($countQuery);
     

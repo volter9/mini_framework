@@ -7,8 +7,6 @@ use storage;
  * Internatinalization (aka i18n) functions
  * 
  * @package mini_framework
- * @require storage
- * @require loader
  */
 
 function init (array $data) {

@@ -1,15 +1,14 @@
 <?php namespace db;
 
+use storage;
+
 use Exception;
 use PDO;
-
-use storage;
 
 /**
  * Database functions
  * 
  * @package mini_framework
- * @require storage
  */
 
 /**

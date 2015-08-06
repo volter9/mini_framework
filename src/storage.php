@@ -6,8 +6,6 @@ use loader;
  * Storage closures
  * 
  * @package mini_framework
- * @requrie array
- * @require loader
  */
 
 /**

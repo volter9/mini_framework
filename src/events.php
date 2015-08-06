@@ -6,7 +6,6 @@ use storage;
  * Events functions
  * 
  * @package mini_framework
- * @require storage
  */
 
 /**
@@ -34,8 +33,8 @@ function emit ($event) {
         return false;
     }
     
-    $args = array_slice(func_get_args(), 1);
     $result = array();
+    $args   = array_slice(func_get_args(), 1);
     
     foreach ($event as $callback) {
         $result[] = call_user_func_array($callback, $args);

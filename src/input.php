@@ -62,7 +62,7 @@ function get_array () {
             return $_POST;
         
         case 'PUT':
-            return file_get_contents('php://input');
+            return parse_str(file_get_contents('php://input'));
         
         /**
          * Other methods available only in **enterprise edition**.

@@ -34,13 +34,13 @@ function storage ($key = null, $value = null) {
  * @param string $lang
  * @param string $path
  */
-function load_language ($lang, $path) {
-    $default = lang('settings.default');
+function load ($lang, $path) {
+    $default = storage('settings.default');
     
-    lang($lang, loader\php("$path/$default"));
+    storage($lang, loader\php("$path/$default"));
     
-    if (!lang('current')) {
-        lang('current', $lang);
+    if (!storage('current')) {
+        storage('current', $lang);
     }
 }
 

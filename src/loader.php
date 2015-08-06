@@ -100,7 +100,7 @@ function model ($model, $path = '') {
  * @param array $data
  */
 function system ($modules = null, array $data = array()) {
-    $api = array('router', 'events', 'view', 'db', 'input', 'i18n');
+    $api = array('router', 'actions', 'events', 'view', 'db', 'input', 'i18n');
     $api = empty($modules) ? $api : $modules;
     
     foreach ($api as $script) {

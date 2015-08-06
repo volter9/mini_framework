@@ -46,16 +46,16 @@ class RouterTest extends TestCase {
         
         router\map(
             'GET friends /friends/', 
-            router\action(
-                '\resources\actions\friends\index',
+            actions\controller(
+                'index', '\resources\actions\friends',
                 app\app_path('resources/actions/friends')
             )
         );
         
         router\map(
             'GET posts /posts/', 
-            router\action(
-                '\posts\actions\index',
+            actions\controller(
+                'index', '\posts\actions',
                 app\app_path('resources/actions/posts')
             )
         );

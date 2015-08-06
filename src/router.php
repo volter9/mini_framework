@@ -95,25 +95,6 @@ function parse_url ($url) {
 }
 
 /**
- * Action callback
- * 
- * @param string $function
- * @param string $path
- * @return \Closure
- */
-function action ($function, $path) {
-    return function () use ($path, $function) {
-        loader\php($path);
-        
-        $ns = before_last($function, '\\');
-        
-        function_exists($fn = "$ns\\init") and $fn();
-        
-        return call_user_func_array($function, func_get_args());
-    };
-}
-
-/**
  * Execute order 66
  * 
  * @param string $url

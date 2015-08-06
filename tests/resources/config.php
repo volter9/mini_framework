@@ -46,7 +46,7 @@ return array(
     
     'autoload' => array(
         'modules' => array(
-            'router', 'events', 'view', 'db', 'input', 'i18n', 
+            'router', 'actions', 'events', 'view', 'db', 'input', 'i18n', 
             'validation', 'pagination'
         )
     ),

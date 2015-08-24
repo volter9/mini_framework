@@ -238,14 +238,16 @@ function invoke_action (array $route, array $parameters) {
  */
 function get_url () {
     $root = router('settings.root');
-    $url  = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
     
-    if ($root && strpos($url, $root) !== false) {
-        $url = explode($root, $url);
-        $url = end($url);
+    $url = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+    $url = trim($url, '/');
+    
+    if ($root && strpos($url, $root) === 0) {
+        $url = substr($url, strlen($root));
+        $url = trim($url, '/');
     }
     
-    return trim($url, ' /');
+    return $url;
 }
 
 /**
